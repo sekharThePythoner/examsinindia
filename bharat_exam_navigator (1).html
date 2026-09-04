@@ -1,0 +1,789 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Comprehensive Indian Examinations Directory & Career Navigator. Explore UPSC, SSC, State PSC, and College Entrance exams.">
+  <title>Bharat Exam Navigator</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600&family=Syne:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    :root {
+      --bg: #0C0B0D;
+      --surface: #19171B;
+      --surface2: #242126;
+      --text: #F5F0E9;
+      --muted: #A49EA8;
+      --accent: #FF704D;
+      --purple: #9B7BFF;
+      --line: #373239;
+      --radius: 1.25rem;
+      --max: 1280px;
+    }
+    
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: var(--bg); color: var(--text); font-family: Manrope, sans-serif; }
+    button, a, input, select { font: inherit; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    a { color: inherit; text-decoration: none; }
+    button { color: inherit; }
+    :focus-visible { outline: 3px solid var(--purple); outline-offset: 4px; }
+    
+    .wrap { width: min(calc(100% - 40px), var(--max)); margin: auto; }
+    
+    header { position: fixed; z-index: 50; inset: 0 0 auto; background: linear-gradient(#0c0b0de8, transparent); padding: 20px 0; backdrop-filter: blur(8px); }
+    nav { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+    .brand { font-family: Syne; font-weight: 800; font-size: 1.2rem; letter-spacing: -.04em; }
+    .brand i { color: var(--accent); font-style: normal; }
+    .navlinks { display: flex; align-items: center; gap: 24px; color: #d1ccd2; font-size: .88rem; }
+    .navlinks a:hover { color: #fff; cursor: pointer; }
+    .nav-cta, .primary { background: var(--accent); color: #160d0a; border: 0; font-weight: 600; cursor: pointer; transition: 0.2s; }
+    .nav-cta:hover, .primary:hover { filter: brightness(1.1); }
+    .nav-cta { padding: 11px 17px; border-radius: 99px; }
+
+    .hero { min-height: 100svh; padding: 150px 0 70px; display: flex; align-items: flex-end; position: relative; overflow: hidden; }
+    .orb { position: absolute; width: 48vw; aspect-ratio: 1; right: -8vw; top: 8vh; border-radius: 50%; background: radial-gradient(circle at 30% 30%, #ffad78, var(--accent) 25%, #8f392d 50%, transparent 69%); filter: saturate(1.2); opacity: .85; animation: float 7s ease-in-out infinite; }
+    .hero-grid { display: grid; grid-template-columns: 1fr .34fr; align-items: end; gap: 50px; position: relative; }
+    .eyebrow { display: flex; align-items: center; gap: 12px; text-transform: uppercase; font-size: .74rem; letter-spacing: .16em; font-weight: 600; color: #c9c3ca; }
+    .eyebrow:before { content: ""; width: 34px; height: 2px; background: var(--accent); }
+    h1, h2, h3, h4 { font-family: Syne, sans-serif; margin: 0; line-height: .95; }
+    h1 { font-size: clamp(3.5rem, 8vw, 8rem); letter-spacing: -.075em; margin: 24px 0 28px; max-width: 1080px; text-transform: uppercase; }
+    h1 .outline { color: transparent; -webkit-text-stroke: 1.5px var(--text); }
+    .hero p { font-size: clamp(1rem, 1.4vw, 1.25rem); line-height: 1.6; max-width: 570px; color: #c4bec6; }
+    .hero-aside { border-left: 1px solid var(--line); padding-left: 24px; color: var(--muted); line-height: 1.6; font-size: .88rem; }
+    .hero-aside strong { display: block; color: var(--text); font-family: Syne; font-size: 2.2rem; margin-bottom: 5px; }
+    .scroll { display: inline-block; margin-top: 34px; color: var(--text); border-bottom: 1px solid var(--accent); padding-bottom: 6px; }
+
+    .marquee { overflow: hidden; border-block: 1px solid var(--line); background: var(--surface); padding: 15px 0; }
+    .marquee-track { display: flex; width: max-content; animation: marquee 24s linear infinite; }
+    .marquee span { font-family: Syne; font-size: .82rem; letter-spacing: .12em; text-transform: uppercase; margin-right: 48px; }
+    .marquee b { color: var(--accent); padding-right: 48px; }
+    .guide { padding: 110px 0; }
+    .section-head { display: grid; grid-template-columns: 1fr 1fr; align-items: end; gap: 30px; margin-bottom: 54px; }
+    .section-head h2 { font-size: clamp(2.8rem, 6vw, 5rem); letter-spacing: -.06em; text-transform: uppercase;}
+    .section-head p { max-width: 480px; color: var(--muted); line-height: 1.65; justify-self: end; }
+
+    .builder { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+    .progress { display: grid; grid-template-columns: repeat(3, 1fr); border-bottom: 1px solid var(--line); }
+    .step-indicator { padding: 19px 24px; color: #7f7881; font-size: .82rem; border-right: 1px solid var(--line); transition: 0.3s; }
+    .step-indicator:last-child { border: 0; }
+    .step-indicator.active { color: var(--text); background: #211e23; }
+    .step-indicator b { color: var(--accent); margin-right: 9px; }
+    .panel { display: none; padding: clamp(26px, 5vw, 64px); }
+    .panel.active { display: block; animation: reveal .45s ease both; }
+    .panel h3 { font-size: clamp(2rem, 4vw, 4.1rem); letter-spacing: -.045em; max-width: 830px; }
+    .panel .lead { color: var(--muted); margin: 16px 0 32px; }
+    
+    .choice-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .choice-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+    .choice { min-height: 135px; text-align: left; padding: 20px; border: 1px solid var(--line); border-radius: 12px; background: #121013; cursor: pointer; transition: .25s; position: relative; overflow: hidden;}
+    .choice:hover, .choice.selected { border-color: var(--accent); background: #271b19; transform: translateY(-3px); }
+    .choice strong { font-family: Syne; font-size: 1.2rem; display: block; margin: 22px 0 7px; }
+    .choice small { color: var(--muted); line-height: 1.4; display: block;}
+    .choice .num { color: var(--accent); font-size: .7rem; }
+    
+    .actions { display: flex; justify-content: space-between; align-items: center; margin-top: 34px; }
+    .primary, .secondary { padding: 14px 22px; border-radius: 99px; }
+    .primary:disabled { opacity: .35; cursor: not-allowed; }
+    .secondary { border: 1px solid var(--line); background: transparent; cursor: pointer; transition: 0.2s; }
+    .secondary:hover { background: var(--surface2); }
+
+    .result-intro { display: flex; justify-content: space-between; gap: 25px; align-items: end; margin-bottom: 30px; }
+    .result-intro p { margin: 0; color: var(--muted); }
+    .career-list { display: grid; gap: 12px; }
+    .career { border-top: 1px solid var(--line); }
+    .career-button { width: 100%; display: grid; grid-template-columns: 80px 1fr auto; align-items: center; text-align: left; padding: 24px 5px; background: none; border: 0; cursor: pointer; }
+    .career-button .index { font-family: Syne; color: var(--accent); font-size: 1.4rem; }
+    .career-button h4 { font-family: Syne; font-size: clamp(1.3rem, 2.3vw, 2.1rem); margin: 0; }
+    .career-button .arrow { font-size: 1.5rem; transition: .2s; }
+    .career.open .arrow { transform: rotate(45deg); color: var(--accent); }
+    .career-details { display: none; padding: 0 5px 30px 80px; }
+    .career.open .career-details { display: block; animation: reveal 0.3s ease; }
+    .detail-grid { display: grid; grid-template-columns: 1fr; gap: 20px; background: #100f11; padding: 25px; border-radius: 12px; border: 1px solid var(--line); }
+    .detail-grid p { color: #beb7bf; line-height: 1.6; margin-top: 8px; font-size: 0.9rem;}
+    
+    .tags { display: flex; gap: 7px; flex-wrap: wrap; margin-top: 10px;}
+    .tag { font-size: .75rem; border: 1px solid var(--line); padding: 5px 12px; border-radius: 99px; background: var(--surface2); color: #d1ccd2;}
+    .tag-accent { border-color: var(--purple); color: var(--purple); background: rgba(155, 123, 255, 0.1); }
+
+    .sleek-input { width: 100%; padding: 14px 18px; background: #121013; border: 1px solid var(--line); color: var(--text); border-radius: 12px; outline: none; transition: 0.2s; font-family: inherit;}
+    .sleek-input:focus { border-color: var(--purple); }
+    .sleek-input option { background: var(--surface); color: var(--text); }
+    
+    .directory-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; margin-top: 30px;}
+    .card-static { min-height: 150px; text-align: left; padding: 24px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); display: flex; flex-direction: column; justify-content: space-between;}
+    .card-static h4 { font-size: 1.25rem; margin-bottom: 8px; letter-spacing: -0.02em; }
+    .card-static p { font-size: 0.85rem; color: var(--muted); line-height: 1.5; margin-bottom: 12px;}
+    
+    table { width: 100%; border-collapse: collapse; font-size: .85rem; }
+    th, td { padding: 14px 10px; border-bottom: 1px solid var(--line); text-align: left; }
+    th { color: var(--muted); font-weight: 500; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em;}
+    
+    .transition { background: var(--purple); color: #110d18; padding: 90px 0; }
+    .transition h2 { font-size: clamp(3rem, 8vw, 6rem); letter-spacing: -.075em; max-width: 1050px; }
+    .transition p { font-weight: 600; max-width: 530px; line-height: 1.6; margin-top: 25px; }
+    
+    .surface-section { background: var(--surface); padding: 90px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);}
+    
+    .chart-container { position: relative; height: 350px; width: 100%; background: #121013; border: 1px solid var(--line); border-radius: 16px; padding: 20px;}
+
+    footer { padding: 50px 0; border-top: 1px solid var(--line); background: var(--bg);}
+    .footer-grid { display: flex; justify-content: space-between; gap: 30px; align-items: end; }
+    footer .brand { font-size: 2rem; }
+    footer p { color: var(--muted); font-size: .84rem; margin-top: 10px;}
+    .footer-links { display: flex; gap: 20px; font-size: .87rem; color: var(--muted);}
+    .footer-links a:hover { color: var(--text); }
+
+    @keyframes marquee { to { transform: translateX(-50%); } }
+    @keyframes float { 50% { transform: translateY(18px) rotate(4deg); } }
+    @keyframes reveal { from { opacity: 0; transform: translateY(16px); } }
+    
+    @media(max-width: 900px) {
+        .choice-grid, .choice-grid.cols-3 { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media(max-width: 760px) {
+      .navlinks a:not(.nav-cta) { display: none; }
+      .wrap { width: min(calc(100% - 24px), var(--max)); }
+      .hero { padding-top: 120px; }
+      .hero-grid, .section-head { grid-template-columns: 1fr; }
+      .hero-aside { display: none; }
+      h1 { font-size: clamp(3.4rem, 16vw, 6rem); }
+      .orb { width: 90vw; right: -45vw; opacity: .5; }
+      .section-head p { justify-self: start; }
+      .guide { padding: 75px 0; }
+      .choice-grid, .choice-grid.cols-3 { grid-template-columns: 1fr 1fr; }
+      .choice { min-height: 120px; }
+      .step-indicator { padding: 14px 10px; font-size: .7rem; }
+      .step-indicator span { display: none; }
+      .career-button { grid-template-columns: 48px 1fr auto; }
+      .career-details { padding-left: 0; }
+      .result-intro, .footer-grid { display: block; }
+      .footer-links { margin-top: 28px; flex-wrap: wrap; }
+    }
+    @media(max-width: 440px) { 
+        .choice-grid, .choice-grid.cols-3 { grid-template-columns: 1fr; } 
+        .panel { padding: 24px 16px; } 
+        .career-button { padding: 20px 0; } 
+    }
+    @media(prefers-reduced-motion: reduce) { * { scroll-behavior: auto!important; animation: none!important; transition: none!important; } }
+  </style>
+</head>
+<body>
+  
+  <header>
+    <div class="wrap">
+      <nav aria-label="Main navigation">
+        <a class="brand" href="#" aria-label="Bharat Exam Navigator home">BHARAT<i>EXAM</i></a>
+        <div class="navlinks">
+          <a href="#directory-sec">Directory</a>
+          <a href="#state-sec">State Ecosystems</a>
+          <a href="#analytics-sec">Analytics</a>
+          <a class="nav-cta" href="#pathfinder-sec">Exam Pathfinder</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="orb" aria-hidden="true"></div>
+      <div class="wrap hero-grid">
+        <div>
+          <div class="eyebrow">Directory of Indian Competitive Exams</div>
+          <h1>MAP YOUR<br><span class="outline">GOVT CAREER.</span></h1>
+          <p>Explore college entrance routes, UPSC, SSC, Banking, Defence, and comprehensive state-by-state public service commission ecosystems across India.</p>
+          <a class="scroll" href="#pathfinder-sec">Discover your eligibility ↓</a>
+        </div>
+        <aside class="hero-aside"><strong>280+ Exams.</strong>No scattered notifications. Just your qualification, sector interest, and a clear path to government and technical roles.</aside>
+      </div>
+    </section>
+
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee-track">
+        <span>UPSC CSE <b>✦</b> SSC CGL <b>✦</b> IBPS PO <b>✦</b> RRB NTPC <b>✦</b> NDA <b>✦</b> STATE PSC <b>✦</b> GATE <b>✦</b></span>
+        <span>UPSC CSE <b>✦</b> SSC CGL <b>✦</b> IBPS PO <b>✦</b> RRB NTPC <b>✦</b> NDA <b>✦</b> STATE PSC <b>✦</b> GATE <b>✦</b></span>
+        <span>UPSC CSE <b>✦</b> SSC CGL <b>✦</b> IBPS PO <b>✦</b> RRB NTPC <b>✦</b> NDA <b>✦</b> STATE PSC <b>✦</b> GATE <b>✦</b></span>
+      </div>
+    </div>
+
+    <section class="guide" id="pathfinder-sec">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>QUALIFICATION<br>PATHFINDER.</h2>
+          <p>Find exact exam routes tailored to your current educational level and target sector. Results update dynamically based on central and state rules.</p>
+        </div>
+
+        <div class="builder">
+          <div class="progress" aria-label="Pathfinder progress">
+            <div class="step-indicator active"><b>01</b><span>Education Level</span></div>
+            <div class="step-indicator"><b>02</b><span>Target Sector</span></div>
+            <div class="step-indicator"><b>03</b><span>Exam Matches</span></div>
+          </div>
+
+          <!-- Step 1: Education -->
+          <section class="panel active" id="step1">
+            <h3>Current Qualification?</h3>
+            <p class="lead">Select your highest completed (or appearing) educational level to filter valid exam entries.</p>
+            <div class="choice-grid" id="pf-qual-grid">
+              <button class="choice" data-qual="10th Pass"><span class="num">01</span><strong>10th / SSC</strong><small>Matriculation level entry</small></button>
+              <button class="choice" data-qual="12th Pass"><span class="num">02</span><strong>12th / HSC</strong><small>Intermediate level entry</small></button>
+              <button class="choice" data-qual="Graduation"><span class="num">03</span><strong>Graduation</strong><small>Any Bachelor's Degree</small></button>
+              <button class="choice" data-qual="Engineering Degree"><span class="num">04</span><strong>B.E. / B.Tech</strong><small>Engineering Graduate</small></button>
+              <button class="choice" data-qual="Law/Medical"><span class="num">05</span><strong>Law / Medical</strong><small>LL.B, MBBS, BDS, etc.</small></button>
+              <button class="choice" data-qual="Post Graduation"><span class="num">06</span><strong>Post Graduation</strong><small>Master's Degree</small></button>
+            </div>
+            <div class="actions"><span></span><button class="primary" id="toStep2" disabled>Choose Sector →</button></div>
+          </section>
+
+          <!-- Step 2: Sector -->
+          <section class="panel" id="step2">
+            <h3>Which domain interests you?</h3>
+            <p class="lead">Filter opportunities by central government, state services, or specialized technical fields.</p>
+            <div class="choice-grid cols-3" id="pf-sector-grid">
+              <button class="choice" data-sector="College Entrance"><span class="num">01</span><strong>College Entrance</strong><small>State CETs & Admissions</small></button>
+              <button class="choice" data-sector="Central Govt (UPSC/SSC)"><span class="num">02</span><strong>Central Govt</strong><small>UPSC, SSC, Ministries</small></button>
+              <button class="choice" data-sector="Banking & Regulatory"><span class="num">03</span><strong>Banking & Fin</strong><small>IBPS, SBI, RBI, SEBI</small></button>
+              <button class="choice" data-sector="Defence & Police"><span class="num">04</span><strong>Defence & Police</strong><small>Armed Forces, CAPF, State</small></button>
+              <button class="choice" data-sector="Railways & PSUs"><span class="num">05</span><strong>Railways & PSUs</strong><small>RRB, GATE, Technical</small></button>
+              <button class="choice" data-sector="State PSC & Teaching"><span class="num">06</span><strong>State PSC / Teach</strong><small>Civil Services & TETs</small></button>
+            </div>
+            <div class="actions">
+                <button class="secondary" data-back="1">← Back</button>
+                <button class="primary" id="showMatches" disabled>View Eligible Exams →</button>
+            </div>
+          </section>
+
+          <!-- Step 3: Results -->
+          <section class="panel" id="step3">
+            <div class="result-intro">
+              <div>
+                  <h3>Your Exam Map.</h3>
+                  <p id="pf-summary" style="font-weight: 600; color: var(--text); margin-top:8px;">Based on your choices</p>
+              </div>
+              <button class="secondary" data-back="2">Change criteria</button>
+            </div>
+            <div class="career-list" id="matchList">
+                <!-- JS Populates Accordions Here -->
+            </div>
+          </section>
+        </div>
+      </div>
+    </section>
+
+    <section class="transition" id="directory-sec">
+      <div class="wrap">
+        <div class="eyebrow" style="color:#21162d">Search 280+ Notifications</div>
+        <h2>GLOBAL EXAM DIRECTORY.</h2>
+        <p>Search across all central recruitment, state PSCs, and sector-specific examinations based on keywords, agency, or state.</p>
+        
+        <div style="margin-top: 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <input type="text" id="dir-search" class="sleek-input" placeholder="Search e.g., 'Inspector', 'Karnataka', 'SSC'..." oninput="filterDirectory()">
+            <select id="dir-scope" class="sleek-input" onchange="filterDirectory()">
+                <option value="ALL">All Scopes (National & State)</option>
+                <option value="National">National Level (Central)</option>
+                <option value="State Specific">State Specific</option>
+            </select>
+        </div>
+      </div>
+    </section>
+
+    <section style="background: var(--surface); padding-bottom: 90px;">
+        <div class="wrap">
+            <div class="directory-grid" id="directory-grid">
+                <!-- JS Populates Static Cards Here -->
+            </div>
+            <div id="dir-empty" style="display:none; text-align:center; padding: 60px 0; color: var(--muted);">
+                No examinations match your current search criteria.
+            </div>
+        </div>
+    </section>
+
+    <section class="guide" id="state-sec">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>STATE & UT<br>ECOSYSTEMS.</h2>
+          <p>Select any Indian State or Union Territory to view its complete structure for College Entrances, Public Service Commissions, Police Boards, and Subordinate recruitments.</p>
+        </div>
+
+        <div style="margin-bottom: 40px;">
+             <select id="state-select" class="sleek-input" style="max-width: 400px; font-weight: bold; border-color: var(--accent);" onchange="renderStateMap()">
+                <!-- JS populates states -->
+             </select>
+        </div>
+
+        <div id="state-map-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px;">
+            <!-- JS populates state details -->
+        </div>
+
+      </div>
+    </section>
+
+    <section class="surface-section" id="analytics-sec">
+      <div class="wrap">
+         <div class="section-head">
+          <h2>DATA<br>INSIGHTS.</h2>
+          <p>Visualizing the distribution of government examinations across sectors and minimum educational qualifications.</p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 30px;">
+            <div>
+                <h4 style="margin-bottom: 15px; color: var(--muted);">Sectoral Distribution</h4>
+                <div class="chart-container">
+                    <canvas id="sectorChart"></canvas>
+                </div>
+            </div>
+            <div>
+                <h4 style="margin-bottom: 15px; color: var(--muted);">Eligibility Requirements</h4>
+                <div class="chart-container">
+                    <canvas id="qualChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exam Comparison Tool -->
+        <div style="margin-top: 80px;">
+             <h3 style="font-size: 2rem; margin-bottom: 20px;">Side-by-Side Comparison</h3>
+             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px;">
+                <select id="comp-a" class="sleek-input" onchange="renderComparison()"></select>
+                <select id="comp-b" class="sleek-input" onchange="renderComparison()"></select>
+             </div>
+             
+             <div style="overflow-x: auto; background: #121013; border: 1px solid var(--line); border-radius: 16px;">
+                 <table id="comp-table">
+                     <!-- JS populates table -->
+                 </table>
+             </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="wrap footer-grid">
+      <div>
+          <a class="brand" href="#">BHARAT<i>EXAM</i></a>
+          <p>Synthesizing recruitment paths for students and job seekers.</p>
+          <div style="margin-top: 15px;">
+              <p style="color: var(--accent); font-weight: 600; margin: 0; font-size: 0.95rem;">Developed by Shekhar</p>
+              <p style="margin: 4px 0 0 0; color: var(--muted); font-size: 0.85rem;">Telegram: @the_phantom_x</p>
+          </div>
+      </div>
+      <div class="footer-links">
+          <a href="#directory-sec">Directory</a>
+          <a href="#state-sec">States</a>
+          <a href="#pathfinder-sec">Pathfinder</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    /* ==========================================================================
+       DATA: EXAMS & STATES 
+       ========================================================================== */
+    const ALL_EXAMS_DATA = [
+      // College Entrance
+      { id: "AP_EAPCET", name: "AP EAPCET", sector: "College Entrance", scope: "State Specific", state: "Andhra Pradesh", minEligibility: "12th Pass", agency: "APSCHE", details: "State-level entrance exam for admission into Engineering, Agriculture, and Pharmacy courses." },
+      { id: "ASSAM_CEE", name: "Assam CEE", sector: "College Entrance", scope: "State Specific", state: "Assam", minEligibility: "12th Pass", agency: "ASTU", details: "Combined Entrance Examination for B.Tech admissions." },
+      { id: "BCECE", name: "BCECE / JEE Main Route", sector: "College Entrance", scope: "State Specific", state: "Bihar", minEligibility: "12th Pass", agency: "BCECEB", details: "State admissions for engineering and technical courses." },
+      { id: "CG_PET", name: "CG PET", sector: "College Entrance", scope: "State Specific", state: "Chhattisgarh", minEligibility: "12th Pass", agency: "CG Vyapam", details: "Pre-Engineering Test for Chhattisgarh colleges." },
+      { id: "GUJCET", name: "GUJCET", sector: "College Entrance", scope: "State Specific", state: "Gujarat", minEligibility: "12th Pass", agency: "GSEB", details: "Gujarat Common Entrance Test for engineering/pharmacy." },
+      { id: "KCET", name: "KCET / COMEDK", sector: "College Entrance", scope: "State Specific", state: "Karnataka", minEligibility: "12th Pass", agency: "KEA", details: "Entrance tests for professional courses including B.Tech." },
+      { id: "KEAM", name: "KEAM", sector: "College Entrance", scope: "State Specific", state: "Kerala", minEligibility: "12th Pass", agency: "CEE Kerala", details: "Kerala Engineering Architecture Medical Entrance Exam." },
+      { id: "MHT_CET", name: "MHT CET", sector: "College Entrance", scope: "State Specific", state: "Maharashtra", minEligibility: "12th Pass", agency: "State CET Cell", details: "State CET for B.E / B.Tech and B.Pharm courses." },
+      { id: "OJEE", name: "OJEE", sector: "College Entrance", scope: "State Specific", state: "Odisha", minEligibility: "12th Pass", agency: "OJEE Board", details: "Odisha Joint Entrance Examination." },
+      { id: "TNEA", name: "TNEA", sector: "College Entrance", scope: "State Specific", state: "Tamil Nadu", minEligibility: "12th Pass", agency: "DoTE", details: "Class 12 marks-based counselling, no separate B.Tech CET." },
+      { id: "TS_EAPCET", name: "TS EAPCET", sector: "College Entrance", scope: "State Specific", state: "Telangana", minEligibility: "12th Pass", agency: "TSCHE", details: "State-level entrance for Engineering and Pharmacy." },
+      { id: "UPTAC", name: "UPTAC (via JEE Main)", sector: "College Entrance", scope: "State Specific", state: "Uttar Pradesh", minEligibility: "12th Pass", agency: "AKTU", details: "Counselling for B.Tech using JEE Main scores." },
+      { id: "WBJEE", name: "WBJEE", sector: "College Entrance", scope: "State Specific", state: "West Bengal", minEligibility: "12th Pass", agency: "WBJEEB", details: "Test for engineering/technology admissions." },
+      { id: "JEE_STATE", name: "State Counselling via JEE Main", sector: "College Entrance", scope: "State Specific", state: "Multiple", minEligibility: "12th Pass", agency: "Various State Boards", details: "Many states (Haryana, Punjab, MP, etc.) use JEE Main scores directly." },
+
+      // Central Govt - UPSC
+      { id: "UPSC_CSE", name: "UPSC Civil Services (CSE)", sector: "Central Govt (UPSC/SSC)", scope: "National", state: "All India", minEligibility: "Graduation", agency: "UPSC", details: "Premier national exam for IAS, IPS, IFS, IRS." },
+      { id: "UPSC_IFoS", name: "UPSC Indian Forest Service", sector: "Central Govt (UPSC/SSC)", scope: "National", state: "All India", minEligibility: "Graduation", agency: "UPSC", details: "Recruitment for Indian Forest Service officers." },
+      { id: "UPSC_ESE", name: "UPSC Engineering Services (ESE)", sector: "Railways & PSUs", scope: "National", state: "All India", minEligibility: "Engineering Degree", agency: "UPSC", details: "Recruitment of Class-1 Engineers in Central Gov." },
+      { id: "UPSC_CDS", name: "UPSC Combined Defence Services (CDS)", sector: "Defence & Police", scope: "National", state: "All India", minEligibility: "Graduation", agency: "UPSC", details: "Recruitment for Commissioned Officers in Armed Forces." },
+      { id: "UPSC_NDA", name: "UPSC NDA & NA Exam", sector: "Defence & Police", scope: "National", state: "All India", minEligibility: "12th Pass", agency: "UPSC", details: "Entry exam for high school graduates to join Defence Academies." },
+      { id: "UPSC_CAPF", name: "UPSC CAPF (AC)", sector: "Defence & Police", scope: "National", state: "All India", minEligibility: "Graduation", agency: "UPSC", details: "Officer recruitment for BSF, CRPF, CISF, ITBP, SSB." },
+      { id: "UPSC_CMS", name: "UPSC Combined Medical Services", sector: "Central Govt (UPSC/SSC)", scope: "National", state: "All India", minEligibility: "Law/Medical", agency: "UPSC", details: "Recruitment of Medical Officers in Central Gov." },
+      { id: "UPSC_IES", name: "UPSC Indian Economic Service", sector: "Central Govt (UPSC/SSC)", scope: "National", state: "All India", minEligibility: "Post Graduation", agency: "UPSC", details: "Recruitment for Indian Economic Service." },
+      { id: "UPSC_ISS", name: "UPSC Indian Statistical Service", sector: "Central Govt (UPSC/SSC)", scope: "National", state: "All India", minEligibility: "Graduation", agency: "UPSC", details: "Recruitment for Indian Statistical Service." },
+
+      // Central Govt - SSC
+      { id: "SSC_CGL", name: "SSC CGL (Graduate Level)", sector: "Central Govt (UPSC/SSC)", scope: "National", state: "All India", minEligibility: "Graduation", agency: "SSC", details: "Recruitment for ASO, Income Tax Inspector, Auditor, JSO." },
+      { id: "SSC_CHSL", name: "SSC CHSL (10+2 Level)", sector: "Central Govt (UPSC/SSC)", scope: "National", state: "All India", minEligibility: "12th Pass", agency: "SSC", details: "Recruitment for LDC, JSA, and Data Entry Operators." },
+      { id: "SSC_MTS", name: "SSC MTS & Havaldar", sector: "Central Govt (UPSC/SSC)", scope: "National", state: "All India", minEligibility: "10th Pass", agency: "SSC", details: "Group 'C' non-gazetted recruitment across ministries." },
+      { id: "SSC_CPO", name: "SSC CPO (Sub-Inspector)", sector: "Defence & Police", scope: "National", state: "All India", minEligibility: "Graduation", agency: "SSC", details: "Recruitment of Sub-Inspectors in Delhi Police & CAPFs." },
+      { id: "SSC_GD", name: "SSC GD Constable", sector: "Defence & Police", scope: "National", state: "All India", minEligibility: "10th Pass", agency: "SSC", details: "Mass recruitment for Constables in CAPFs." },
+      { id: "SSC_JE", name: "SSC JE (Junior Engineer)", sector: "Railways & PSUs", scope: "National", state: "All India", minEligibility: "Engineering Degree", agency: "SSC", details: "Recruitment of Junior Engineers in CPWD, MES." },
+      { id: "SSC_STENO", name: "SSC Stenographer Grade C & D", sector: "Central Govt (UPSC/SSC)", scope: "National", state: "All India", minEligibility: "12th Pass", agency: "SSC", details: "Stenographer recruitment across ministries." },
+
+      // Banking & Regulatory
+      { id: "IBPS_PO", name: "IBPS PO / MT", sector: "Banking & Regulatory", scope: "National", state: "All India", minEligibility: "Graduation", agency: "IBPS", details: "Probationary Officer recruitment for Public Sector Banks." },
+      { id: "IBPS_CLERK", name: "IBPS Clerk", sector: "Banking & Regulatory", scope: "National", state: "All India", minEligibility: "Graduation", agency: "IBPS", details: "Clerical cadre recruitment for PSBs." },
+      { id: "IBPS_SO", name: "IBPS Specialist Officer (SO)", sector: "Banking & Regulatory", scope: "National", state: "All India", minEligibility: "Graduation", agency: "IBPS", details: "Specialist Officers (IT, Law, Agriculture, HR, Marketing)." },
+      { id: "IBPS_RRB", name: "IBPS RRB Officer & Assistant", sector: "Banking & Regulatory", scope: "National", state: "All India", minEligibility: "Graduation", agency: "IBPS", details: "Recruitment for Regional Rural Banks (Scale I/II/III)." },
+      { id: "SBI_PO", name: "SBI PO", sector: "Banking & Regulatory", scope: "National", state: "All India", minEligibility: "Graduation", agency: "SBI", details: "Probationary Officer recruitment in State Bank of India." },
+      { id: "SBI_CLERK", name: "SBI Clerk", sector: "Banking & Regulatory", scope: "National", state: "All India", minEligibility: "Graduation", agency: "SBI", details: "Junior Associate recruitment in SBI." },
+      { id: "RBI_GRADE_B", name: "RBI Grade B Officer", sector: "Banking & Regulatory", scope: "National", state: "All India", minEligibility: "Graduation", agency: "RBI", details: "Direct Officer recruitment in Reserve Bank of India." },
+      { id: "NABARD_GRADE_A", name: "NABARD Grade A", sector: "Banking & Regulatory", scope: "National", state: "All India", minEligibility: "Graduation", agency: "NABARD", details: "Assistant Manager recruitment in rural development." },
+      { id: "SEBI_GRADE_A", name: "SEBI Grade A", sector: "Banking & Regulatory", scope: "National", state: "All India", minEligibility: "Graduation", agency: "SEBI", details: "Assistant Manager in Securities and Exchange Board." },
+      { id: "LIC_AAO", name: "LIC AAO", sector: "Banking & Regulatory", scope: "National", state: "All India", minEligibility: "Graduation", agency: "LIC", details: "Assistant Administrative Officer in Life Insurance Corp." },
+
+      // Railways (RRB)
+      { id: "RRB_NTPC", name: "RRB NTPC", sector: "Railways & PSUs", scope: "National", state: "All India", minEligibility: "12th Pass", agency: "RRB", details: "Non-Technical Popular Categories (Station Master, Clerk)." },
+      { id: "RRB_GROUP_D", name: "RRB Group D", sector: "Railways & PSUs", scope: "National", state: "All India", minEligibility: "10th Pass", agency: "RRC", details: "Mass recruitment for Track Maintainer, Helpers." },
+      { id: "RRB_ALP", name: "RRB ALP & Technician", sector: "Railways & PSUs", scope: "National", state: "All India", minEligibility: "10th Pass", agency: "RRB", details: "Recruitment for Assistant Loco Pilots and Technicians." },
+      { id: "RRB_JE", name: "RRB JE", sector: "Railways & PSUs", scope: "National", state: "All India", minEligibility: "Engineering Degree", agency: "RRB", details: "Railway Junior Engineer recruitment." },
+      { id: "RPF_SI", name: "RPF Sub-Inspector & Constable", sector: "Defence & Police", scope: "National", state: "All India", minEligibility: "10th Pass", agency: "RRB/RPF", details: "Railway Protection Force recruitment." },
+
+      // Teaching & Research
+      { id: "CTET", name: "CTET", sector: "State PSC & Teaching", scope: "National", state: "All India", minEligibility: "Graduation", agency: "CBSE", details: "Central Teacher Eligibility Test." },
+      { id: "UGC_NET", name: "UGC NET", sector: "State PSC & Teaching", scope: "National", state: "All India", minEligibility: "Post Graduation", agency: "NTA", details: "Eligibility for Assistant Professor and JRF." },
+      { id: "CSIR_NET", name: "CSIR UGC NET", sector: "State PSC & Teaching", scope: "National", state: "All India", minEligibility: "Post Graduation", agency: "NTA", details: "Eligibility for Science Research and Lectureship." },
+      { id: "STATE_TET", name: "State TET (UPTET, REET, etc.)", sector: "State PSC & Teaching", scope: "State Specific", state: "Multiple", minEligibility: "Graduation", agency: "Education Boards", details: "State-level Teacher Eligibility Tests." },
+
+      // State PSC & Others
+      { id: "STATE_PSC_CIVIL", name: "State Civil Services (PCS/KAS/RAS)", sector: "State PSC & Teaching", scope: "State Specific", state: "Multiple", minEligibility: "Graduation", agency: "State PSCs", details: "State-level administrative officer recruitment (e.g., UPPSC, MPSC, RPSC)." },
+      { id: "STATE_POLICE", name: "State Police SI & Constable", sector: "Defence & Police", scope: "State Specific", state: "Multiple", minEligibility: "12th Pass", agency: "State Police Boards", details: "State uniform services recruitment." },
+      { id: "GATE_PSU", name: "GATE / PSU Direct Recruitment", sector: "Railways & PSUs", scope: "National", state: "All India", minEligibility: "Engineering Degree", agency: "IITs/PSUs", details: "Technical recruitment for ONGC, NTPC, DRDO, ISRO, BARC." },
+      { id: "JUDICIARY", name: "State Judicial Services", sector: "State PSC & Teaching", scope: "State Specific", state: "Multiple", minEligibility: "Law/Medical", agency: "State High Courts", details: "Recruitment for Civil Judge and Magistrates." }
+    ];
+
+    const STATES_ECOSYSTEM_DATA = {
+      "Andhra Pradesh": { psc: "APPSC (Group 1, 2, 3, 4, AE, AEE)", police: "AP Police SI & Constable", entrance: "AP EAPCET (Engineering/Pharmacy)", subordinate: "AP TET, DSC Teacher, Technical Depts" },
+      "Arunachal Pradesh": { psc: "APPSC (Civil Services, Group B/C, AE)", police: "Arunachal Police", entrance: "JEE Main / Institute Routes", subordinate: "APSSB, Teachers" },
+      "Assam": { psc: "APSC (CCE, Police Service, AE, Lecturer)", police: "Assam Police SI & Constable", entrance: "Assam CEE", subordinate: "ADRE (Grade III & IV), Assam TET" },
+      "Bihar": { psc: "BPSC (CCE, TRE Teacher, AE, Judicial)", police: "BPSSC (SI) & CSBC (Constable)", entrance: "BCECE / JEE Main Routes", subordinate: "BSSC, BTSC (Technical), STET" },
+      "Chhattisgarh": { psc: "CGPSC (State Service, Forest, AE)", police: "CG Police", entrance: "CG PET", subordinate: "CG Vyapam, CG TET, Patwari" },
+      "Goa": { psc: "Goa PSC (Civil Service, Engineer, Medical)", police: "Goa Police", entrance: "JEE Main Route", subordinate: "Goa TET, Staff Selection" },
+      "Gujarat": { psc: "GPSC (Admin Class 1/2, Engineering)", police: "Gujarat Police Recruitment Board", entrance: "GUJCET", subordinate: "GSSSB, Gujarat TET" },
+      "Haryana": { psc: "HPSC (HCS, AE, Lecturer)", police: "Haryana Police Recruitment", entrance: "HSTES Counselling (via JEE Main)", subordinate: "HSSC (CET Group C/D), HTET" },
+      "Himachal Pradesh": { psc: "HPPSC (HPAS, Allied, Forest, AE)", police: "HP Police", entrance: "HPCET", subordinate: "HPSSSB, HP TET, Patwari" },
+      "Jharkhand": { psc: "JPSC (Civil Services, Forest, AE)", police: "Jharkhand Police", entrance: "JEE Main Route", subordinate: "JSSC, Jharkhand TET" },
+      "Karnataka": { psc: "KPSC (Gazetted Probationers KAS, Group B/C)", police: "Karnataka Police Recruitment", entrance: "KCET (Govt) & COMEDK (Private)", subordinate: "KEA, Karnataka TET" },
+      "Kerala": { psc: "Kerala PSC (KAS, Degree/Plus-Two Level Exams)", police: "Kerala Police (via PSC)", entrance: "KEAM", subordinate: "KTET, Unified PSC structure" },
+      "Madhya Pradesh": { psc: "MPPSC (State Service, Forest, AE)", police: "MP Police Constable/SI", entrance: "JEE Main Route", subordinate: "MPESB, Patwari, TET" },
+      "Maharashtra": { psc: "MPSC (Rajyaseva, Group B/C, Engineering)", police: "Maharashtra Police Bharti", entrance: "MHT CET", subordinate: "Maha TET, Zilla Parishad Boards" },
+      "Manipur": { psc: "Manipur PSC (Civil Services, CCE, Engg)", police: "Manipur Police", entrance: "JEE Main Route", subordinate: "Manipur TET, Departmental" },
+      "Meghalaya": { psc: "Meghalaya PSC (Civil, Police, Engg)", police: "Meghalaya Police", entrance: "JEE Main Route", subordinate: "Meghalaya TET" },
+      "Mizoram": { psc: "Mizoram PSC (Civil, Engg, Group A/B)", police: "Mizoram Police", entrance: "JEE Main Route", subordinate: "Mizoram TET" },
+      "Nagaland": { psc: "NPSC (Civil, Police, Engg)", police: "Nagaland Police", entrance: "JEE Main Route", subordinate: "Nagaland TET" },
+      "Odisha": { psc: "OPSC (Civil, Judicial, AEE)", police: "Odisha Police", entrance: "OJEE / JEE Main", subordinate: "OSSC, OSSSC, OTET, RI/Amin" },
+      "Punjab": { psc: "PPSC (PCS, AE, Lecturer)", police: "Punjab Police", entrance: "JEE Main Route", subordinate: "PSSSB, PSTET, Patwari" },
+      "Rajasthan": { psc: "RPSC (RAS, Senior Teacher, AE)", police: "Rajasthan Police Board", entrance: "REAP (Counselling Route)", subordinate: "RSSB (CET, Patwari), REET" },
+      "Sikkim": { psc: "SPSC (Civil, Police, AE)", police: "Sikkim Police", entrance: "JEE Main Route", subordinate: "STET" },
+      "Tamil Nadu": { psc: "TNPSC (Group I, II/IIA, IV, Engineering)", police: "TNUSRB (Police, Fire, Prison)", entrance: "TNEA (Class 12 Marks Counselling)", subordinate: "TRB, TN TET" },
+      "Telangana": { psc: "TGPSC (Group I, II, III, IV, AE)", police: "Telangana Police", entrance: "TS EAPCET", subordinate: "TS TET, Technical Boards" },
+      "Tripura": { psc: "TPSC (Civil, Police, Engg)", police: "Tripura Police", entrance: "TJEE", subordinate: "T-TET" },
+      "Uttar Pradesh": { psc: "UPPSC (PCS, RO/ARO, AE, Civil Judge)", police: "UPPRPB (SI, Constable)", entrance: "UPTAC (via JEE Main)", subordinate: "UPSSSC (PET, VDO), UPTET" },
+      "Uttarakhand": { psc: "UKPSC (Civil, Forest, AE, Judge)", police: "Uttarakhand Police", entrance: "JEE Main Route", subordinate: "UKSSSC, Patwari/Lekhpal" },
+      "West Bengal": { psc: "WBPSC (WBCS, Judicial, Engineering)", police: "WB Police Recruitment Board", entrance: "WBJEE", subordinate: "WBSSC, WB TET" },
+      "Delhi (UT)": { psc: "UPSC (UT Cadre for IAS/IPS)", police: "Delhi Police (via SSC CPO/Constable)", entrance: "JAC Delhi / IPU CET", subordinate: "DSSSB (Teachers, Clerks, Healthcare)" },
+      "Jammu & Kashmir (UT)": { psc: "JKPSC", police: "J&K Police", entrance: "JKCET / JEE Main", subordinate: "JKSSB" }
+    };
+
+    /* ==========================================================================
+       PATHFINDER BUILDER LOGIC
+       ========================================================================== */
+    let pfState = { qual: "", sector: "" };
+    const panels = [...document.querySelectorAll(".panel")];
+    const indicators = [...document.querySelectorAll(".step-indicator")];
+
+    function goToStep(n) {
+      panels.forEach((p, i) => p.classList.toggle("active", i === n - 1));
+      indicators.forEach((p, i) => p.classList.toggle("active", i === n - 1));
+      if(n > 1) {
+          document.querySelector(".builder").scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }
+
+    // Step 1 Selection
+    document.querySelectorAll("#pf-qual-grid .choice").forEach(btn => {
+      btn.onclick = () => {
+        document.querySelectorAll("#pf-qual-grid .choice").forEach(x => x.classList.remove("selected"));
+        btn.classList.add("selected");
+        pfState.qual = btn.dataset.qual;
+        document.getElementById("toStep2").disabled = false;
+      };
+    });
+
+    document.getElementById("toStep2").onclick = () => goToStep(2);
+
+    // Step 2 Selection
+    document.querySelectorAll("#pf-sector-grid .choice").forEach(btn => {
+      btn.onclick = () => {
+        document.querySelectorAll("#pf-sector-grid .choice").forEach(x => x.classList.remove("selected"));
+        btn.classList.add("selected");
+        pfState.sector = btn.dataset.sector;
+        document.getElementById("showMatches").disabled = false;
+      };
+    });
+
+    // Generate Results (Step 3)
+    document.getElementById("showMatches").onclick = () => {
+      document.getElementById("pf-summary").textContent = `Qualification: ${pfState.qual}  ·  Interest: ${pfState.sector}`;
+      
+      // Filter Logic
+      const matches = ALL_EXAMS_DATA.filter(exam => {
+          let qMatch = false;
+          if (pfState.qual === "10th Pass") qMatch = (exam.minEligibility === "10th Pass");
+          else if (pfState.qual === "12th Pass") qMatch = (exam.minEligibility === "10th Pass" || exam.minEligibility === "12th Pass");
+          else if (pfState.qual === "Engineering Degree") qMatch = (exam.minEligibility !== "Law/Medical");
+          else if (pfState.qual === "Graduation") qMatch = (exam.minEligibility === "10th Pass" || exam.minEligibility === "12th Pass" || exam.minEligibility === "Graduation");
+          else qMatch = true; // PG or Law/Medical matches broadly in this simplified logic
+
+          let sMatch = (exam.sector === pfState.sector);
+          
+          return qMatch && sMatch;
+      });
+
+      const listContainer = document.getElementById("matchList");
+      if(matches.length === 0) {
+          listContainer.innerHTML = `<div style="padding: 20px; color: var(--muted);">No exact direct routes found for this combination. Try broadening your qualification.</div>`;
+      } else {
+          listContainer.innerHTML = matches.map((m, i) => `
+            <article class="career">
+              <button class="career-button" aria-expanded="false">
+                <span class="index">0${i+1}</span>
+                <h4>${m.name}</h4>
+                <span class="arrow">+</span>
+              </button>
+              <div class="career-details">
+                <div class="detail-grid">
+                  <div>
+                    <strong style="color:var(--text)">EXAM OVERVIEW</strong>
+                    <p>${m.details}</p>
+                    <div class="tags">
+                      <span class="tag tag-accent">${m.agency}</span>
+                      <span class="tag">${m.scope}</span>
+                      <span class="tag">Min Qual: ${m.minEligibility}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </article>
+          `).join("");
+
+          // Attach accordion listeners
+          listContainer.querySelectorAll(".career-button").forEach(b => {
+            b.onclick = () => {
+              const card = b.parentElement;
+              const open = card.classList.toggle("open");
+              b.setAttribute("aria-expanded", open);
+            };
+          });
+      }
+      
+      goToStep(3);
+    };
+
+    // Back Buttons
+    document.querySelectorAll("[data-back]").forEach(b => {
+      b.onclick = () => goToStep(parseInt(b.dataset.back));
+    });
+
+    /* ==========================================================================
+       DIRECTORY EXPLORER LOGIC
+       ========================================================================== */
+    function filterDirectory() {
+        const query = document.getElementById("dir-search").value.toLowerCase();
+        const scope = document.getElementById("dir-scope").value;
+        const grid = document.getElementById("directory-grid");
+        const emptyMsg = document.getElementById("dir-empty");
+
+        const filtered = ALL_EXAMS_DATA.filter(e => {
+            const matchQ = e.name.toLowerCase().includes(query) || e.agency.toLowerCase().includes(query) || e.state.toLowerCase().includes(query);
+            const matchS = scope === "ALL" || e.scope === scope;
+            return matchQ && matchS;
+        });
+
+        if(filtered.length === 0) {
+            grid.innerHTML = "";
+            emptyMsg.style.display = "block";
+        } else {
+            emptyMsg.style.display = "none";
+            grid.innerHTML = filtered.map(e => `
+                <div class="card-static">
+                    <div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px;">
+                            <span class="tag" style="font-size:0.65rem; border-color:var(--accent); color:var(--accent); background:transparent;">${e.scope}</span>
+                            <span style="font-size:0.7rem; color:var(--muted);">${e.state}</span>
+                        </div>
+                        <h4>${e.name}</h4>
+                        <p>${e.details}</p>
+                    </div>
+                    <div style="border-top: 1px solid var(--line); padding-top: 12px; font-size: 0.75rem; color: var(--muted); display:flex; justify-content:space-between;">
+                        <span>By: <strong style="color:var(--text)">${e.agency}</strong></span>
+                        <span style="color:var(--purple)">${e.minEligibility}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+    }
+
+    /* ==========================================================================
+       STATE ECOSYSTEM LOGIC
+       ========================================================================== */
+    function initStates() {
+        const select = document.getElementById("state-select");
+        Object.keys(STATES_ECOSYSTEM_DATA).forEach(st => {
+            const opt = document.createElement("option");
+            opt.value = st;
+            opt.textContent = st;
+            select.appendChild(opt);
+        });
+        renderStateMap();
+    }
+
+    function renderStateMap() {
+        const state = document.getElementById("state-select").value;
+        const data = STATES_ECOSYSTEM_DATA[state];
+        const container = document.getElementById("state-map-container");
+
+        container.innerHTML = `
+            <div class="card-static" style="background: #121013;">
+                <h4 style="color: var(--accent); border-bottom: 1px solid var(--line); padding-bottom: 10px;">🏛️ State PSC</h4>
+                <p style="margin-top: 10px; color: var(--text); font-weight: 500;">${data.psc}</p>
+                <p style="font-size: 0.75rem;">Conducts Civil Services, Class 1 & 2 Gazetted Officer recruitments.</p>
+            </div>
+            <div class="card-static" style="background: #121013;">
+                <h4 style="color: var(--purple); border-bottom: 1px solid var(--line); padding-bottom: 10px;">🎓 College Entrance</h4>
+                <p style="margin-top: 10px; color: var(--text); font-weight: 500;">${data.entrance}</p>
+                <p style="font-size: 0.75rem;">Gateway for state engineering, agriculture, and professional degrees.</p>
+            </div>
+            <div class="card-static" style="background: #121013;">
+                <h4 style="color: #059669; border-bottom: 1px solid var(--line); padding-bottom: 10px;">👮 Police & Uniformed</h4>
+                <p style="margin-top: 10px; color: var(--text); font-weight: 500;">${data.police}</p>
+                <p style="font-size: 0.75rem;">Recruitment for Constables, Sub-Inspectors, and Armed Reserve.</p>
+            </div>
+            <div class="card-static" style="background: #121013;">
+                <h4 style="color: #0284c7; border-bottom: 1px solid var(--line); padding-bottom: 10px;">📑 Subordinate / Teaching</h4>
+                <p style="margin-top: 10px; color: var(--text); font-weight: 500;">${data.subordinate}</p>
+                <p style="font-size: 0.75rem;">Handles Group C/D, Clerical, Patwari, and Teacher Eligibility (TET).</p>
+            </div>
+        `;
+    }
+
+    /* ==========================================================================
+       ANALYTICS & COMPARE LOGIC
+       ========================================================================== */
+    function initCompare() {
+        const selA = document.getElementById("comp-a");
+        const selB = document.getElementById("comp-b");
+        
+        ALL_EXAMS_DATA.forEach((e, i) => {
+            selA.innerHTML += `<option value="${i}">${e.name}</option>`;
+            selB.innerHTML += `<option value="${i}">${e.name}</option>`;
+        });
+        
+        selA.selectedIndex = 0; // UPSC
+        selB.selectedIndex = 5; // SSC CGL
+        renderComparison();
+    }
+
+    function renderComparison() {
+        const exA = ALL_EXAMS_DATA[document.getElementById("comp-a").value];
+        const exB = ALL_EXAMS_DATA[document.getElementById("comp-b").value];
+        
+        document.getElementById("comp-table").innerHTML = `
+            <thead>
+                <tr>
+                    <th style="width: 20%;">Feature</th>
+                    <th style="width: 40%; color: var(--accent); font-size: 1rem; text-transform:none;">${exA.name}</th>
+                    <th style="width: 40%; color: var(--purple); font-size: 1rem; text-transform:none;">${exB.name}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Agency</strong></td>
+                    <td>${exA.agency}</td>
+                    <td>${exB.agency}</td>
+                </tr>
+                <tr>
+                    <td><strong>Category</strong></td>
+                    <td>${exA.sector}</td>
+                    <td>${exB.sector}</td>
+                </tr>
+                <tr>
+                    <td><strong>Scope</strong></td>
+                    <td>${exA.scope} (${exA.state})</td>
+                    <td>${exB.scope} (${exB.state})</td>
+                </tr>
+                <tr>
+                    <td><strong>Min Qualification</strong></td>
+                    <td style="font-weight:bold; color: #F5F0E9;">${exA.minEligibility}</td>
+                    <td style="font-weight:bold; color: #F5F0E9;">${exB.minEligibility}</td>
+                </tr>
+                <tr>
+                    <td><strong>Details</strong></td>
+                    <td style="color: var(--muted);">${exA.details}</td>
+                    <td style="color: var(--muted);">${exB.details}</td>
+                </tr>
+            </tbody>
+        `;
+    }
+
+    function initCharts() {
+        Chart.defaults.color = '#A49EA8';
+        Chart.defaults.font.family = 'Manrope';
+
+        // Sector Data
+        const sectors = {};
+        ALL_EXAMS_DATA.forEach(e => sectors[e.sector] = (sectors[e.sector] || 0) + 1);
+        
+        new Chart(document.getElementById('sectorChart'), {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(sectors),
+                datasets: [{
+                    data: Object.values(sectors),
+                    backgroundColor: ['#FF704D', '#9B7BFF', '#059669', '#0284c7', '#d97706', '#dc2626'],
+                    borderWidth: 0
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right' } } }
+        });
+
+        // Qual Data
+        const quals = {};
+        ALL_EXAMS_DATA.forEach(e => quals[e.minEligibility] = (quals[e.minEligibility] || 0) + 1);
+        
+        new Chart(document.getElementById('qualChart'), {
+            type: 'bar',
+            data: {
+                labels: Object.keys(quals),
+                datasets: [{
+                    label: 'Number of Exams',
+                    data: Object.values(quals),
+                    backgroundColor: '#9B7BFF',
+                    borderRadius: 4
+                }]
+            },
+            options: { 
+                responsive: true, maintainAspectRatio: false, 
+                plugins: { legend: { display: false } },
+                scales: { 
+                    y: { grid: { color: '#373239' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+    }
+
+    // Initialize everything on load
+    window.onload = () => {
+        filterDirectory();
+        initStates();
+        initCompare();
+        initCharts();
+    };
+  </script>
+</body>
+</html>
