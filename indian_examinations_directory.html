@@ -1,0 +1,1503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Indian Examinations Directory & Career Navigator</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    /* Custom chart container styling enforcing height and max-width boundaries */
+    .chart-container {
+      position: relative;
+      width: 100%;
+      max-width: 580px;
+      margin-left: auto;
+      margin-right: auto;
+      height: 320px;
+      max-height: 380px;
+    }
+    @media (min-width: 768px) {
+      .chart-container {
+        height: 350px;
+      }
+    }
+    /* Smooth transitions and scrollbar styling */
+    html {
+      scroll-behavior: smooth;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col">
+
+  <!-- Placeholder Comments as Required -->
+  <!-- Chosen Palette: Warm Sand & Slate Navy (Background: Slate-50/Amber-50, Primary: Slate-900, Accent: Amber-600, Highlights: Emerald & Indigo) -->
+  <!-- Application Structure Plan: The application is structured into five distinct functional views: 1) All Exams Directory with real-time multi-attribute search and filtering, 2) State & UT Recruitment Ecosystem Map covering all 28 states and 8 UTs, 3) Sector Deep-Dive Accordion Hub, 4) Personal Qualification Pathfinder tool, and 5) Visual Analytics & Comparison Dashboard with dynamic side-by-side exam comparison. This structure empowers students, career counselors, and candidates to systematically discover, filter, and compare entrance and job exams across India. -->
+  <!-- Visualization & Content Choices: Sector Distribution -> Goal: Overview -> Chart.js Doughnut Chart (Canvas) -> Interactive slice selection; Minimum Qualification Breakdown -> Goal: Categorical comparison -> Chart.js Bar Chart (Canvas) -> Responsive legend and tooltips; State Exam Cards -> Goal: Spatial and departmental hierarchy -> Structured HTML cards with distinct badges; Exam Comparison -> Goal: Side-by-side analysis -> Dynamic JavaScript table generator. Confirmed NO SVG graphics and NO Mermaid JS used. -->
+  <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+  <!-- Top Navigation Header -->
+  <header class="bg-slate-900 text-white shadow-md sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+      <div class="flex items-center space-x-3">
+        <span class="text-2xl font-black bg-gradient-to-r from-amber-400 via-orange-300 to-emerald-400 bg-clip-text text-transparent">
+          BHARAT EXAM NAVIGATOR 🇮🇳
+        </span>
+        <span class="text-xs bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded-full font-medium">
+          Comprehensive Directory
+        </span>
+      </div>
+
+      <!-- Main Navigation Tabs -->
+      <nav class="flex flex-wrap items-center gap-1 sm:gap-2 text-xs sm:text-sm font-medium">
+        <button onclick="switchTab('explorer')" id="tab-explorer" class="nav-btn px-3 py-1.5 rounded-lg transition-all bg-amber-600 text-white shadow">
+          🔍 All Exams Directory
+        </button>
+        <button onclick="switchTab('states')" id="tab-states" class="nav-btn px-3 py-1.5 rounded-lg transition-all text-slate-300 hover:bg-slate-800 hover:text-white">
+          🗺️ State & UT Hub
+        </button>
+        <button onclick="switchTab('sectors')" id="tab-sectors" class="nav-btn px-3 py-1.5 rounded-lg transition-all text-slate-300 hover:bg-slate-800 hover:text-white">
+          🏢 Sector Deep-Dive
+        </button>
+        <button onclick="switchTab('pathfinder')" id="tab-pathfinder" class="nav-btn px-3 py-1.5 rounded-lg transition-all text-slate-300 hover:bg-slate-800 hover:text-white">
+          🎯 Qualification Pathfinder
+        </button>
+        <button onclick="switchTab('analytics')" id="tab-analytics" class="nav-btn px-3 py-1.5 rounded-lg transition-all text-slate-300 hover:bg-slate-800 hover:text-white">
+          📊 Analytics & Compare
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Key Metrics Quick Summary Bar -->
+  <section class="bg-slate-800 border-b border-slate-700 text-slate-200 py-2 text-xs sm:text-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-wrap items-center justify-between gap-2">
+      <div class="flex items-center space-x-4">
+        <span> Total Exams Tracked: <strong class="text-amber-400 font-bold" id="stat-total-count">280+</strong></span>
+        <span class="hidden sm:inline">|</span>
+        <span class="hidden sm:inline"> States & UTs: <strong class="text-emerald-400 font-bold">36 Ecosystems</strong></span>
+        <span class="hidden md:inline">|</span>
+        <span class="hidden md:inline"> Exam Types: <strong class="text-sky-400 font-bold">B.Tech CETs & Govt Recruitment</strong></span>
+      </div>
+      <div class="text-slate-400 text-xs">
+        Data Source: Official Central & State Notifications
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Application Body Container -->
+  <main class="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6">
+
+    <!-- VIEW 1: GLOBAL EXAMS DIRECTORY & SEARCH EXPLORER -->
+    <section id="view-explorer" class="space-y-6">
+      
+      <!-- Section Intro Header -->
+      <div class="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 sm:p-5">
+        <h1 class="text-xl sm:text-2xl font-bold text-slate-900 mb-1">
+          Explore All Indian Entrance & Recruitment Examinations
+        </h1>
+        <p class="text-slate-600 text-sm leading-relaxed">
+          Welcome to the interactive directory of Indian exams. This view allows you to dynamically filter through central recruitment (UPSC, SSC, Railways, Banking), state college entrance engineering routes (KCET, MHT CET, GUJCET, WBJEE), state PSCs, and sector-specific examinations based on keywords, sector, eligibility, and region.
+        </p>
+      </div>
+
+      <!-- Controls Panel: Search & Filters -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+          
+          <!-- Search Input -->
+          <div class="md:col-span-1">
+            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Search Keywords</label>
+            <input type="text" id="input-search" oninput="applyFilters()" placeholder="e.g. UPSC, IBPS, MHT CET, Police, Engineer..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
+          </div>
+
+          <!-- Sector / Category Filter -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Sector / Exam Category</label>
+            <select id="filter-sector" onchange="applyFilters()" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white">
+              <option value="ALL">All Sectors & Categories</option>
+              <option value="College Entrance">College Entrance (B.Tech / State CET)</option>
+              <option value="Central Govt - UPSC">Central Govt - UPSC</option>
+              <option value="Central Govt - SSC">Central Govt - SSC</option>
+              <option value="Banking & Regulatory">Banking & Regulatory Institutions</option>
+              <option value="Railways (RRB/RRC)">Indian Railways (RRB/RRC)</option>
+              <option value="Defence & Armed Forces">Defence & Armed Forces</option>
+              <option value="Police & Paramilitary">Police & Security Forces</option>
+              <option value="Medical & Healthcare">Medical & Healthcare</option>
+              <option value="Teaching & Education">Teaching & Academics</option>
+              <option value="Judiciary & Law">Judiciary & Legal Services</option>
+              <option value="Technical & PSUs">Technical & Public Sector Units (PSU)</option>
+              <option value="Statistics & Economics">Statistics & Economic Services</option>
+              <option value="Science & Research">Science & Research</option>
+              <option value="State Govt Recruitment">State Govt Civil Services & Boards</option>
+            </select>
+          </div>
+
+          <!-- Eligibility Level Filter -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Minimum Qualification</label>
+            <select id="filter-eligibility" onchange="applyFilters()" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white">
+              <option value="ALL">All Qualification Levels</option>
+              <option value="10th Pass">10th Pass / High School</option>
+              <option value="12th Pass">12th Pass / Intermediate / Class 12 Marks</option>
+              <option value="Graduation">Graduation / Bachelor's Degree</option>
+              <option value="Engineering Degree">Engineering Degree (B.E / B.Tech)</option>
+              <option value="Law Degree">Law Degree (LL.B)</option>
+              <option value="Medical Degree">Medical / Healthcare Qualification</option>
+              <option value="Post Graduation">Post Graduation / Specialization</option>
+            </select>
+          </div>
+
+          <!-- Scope / Region Filter -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Geographic Scope</label>
+            <select id="filter-scope" onchange="applyFilters()" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white">
+              <option value="ALL">All India & States</option>
+              <option value="National">National Level (Central)</option>
+              <option value="State Specific">State Level</option>
+            </select>
+          </div>
+
+        </div>
+
+        <!-- Filter Action Bar & Results Count -->
+        <div class="flex items-center justify-between border-t border-slate-100 pt-3 text-xs sm:text-sm text-slate-600">
+          <div>
+            Showing <strong id="results-count" class="text-amber-700 font-bold">0</strong> exams matching criteria
+          </div>
+          <button onclick="resetFilters()" class="text-amber-700 hover:text-amber-800 font-medium underline">
+            Reset All Filters
+          </button>
+        </div>
+      </div>
+
+      <!-- Results Grid -->
+      <div id="explorer-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- JS dynamically populates cards here -->
+      </div>
+    </section>
+
+    <!-- VIEW 2: STATE & UT RECRUITMENT ECOSYSTEM MAP -->
+    <section id="view-states" class="hidden space-y-6">
+      
+      <!-- Section Intro Header -->
+      <div class="bg-indigo-500/10 border border-indigo-500/20 rounded-xl p-4 sm:p-5">
+        <h2 class="text-xl sm:text-2xl font-bold text-slate-900 mb-1">
+          State & Union Territory Examination Ecosystems
+        </h2>
+        <p class="text-slate-600 text-sm leading-relaxed">
+          Each Indian State and Union Territory maintains its own entrance exam routes (such as state engineering CETs or Class 12 merit counseling) alongside state public service commissions (PSC), police recruitment boards, subordinate service selection boards, and TET examinations. Select a state or region to inspect its full exam ecosystem.
+        </p>
+      </div>
+
+      <!-- Region Selector Pills & Dropdown -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Select State or UT</label>
+            <select id="select-state" onchange="renderStateDetail()" class="w-full sm:w-72 px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white font-medium">
+              <!-- Dynamically populated states list -->
+            </select>
+          </div>
+
+          <!-- Quick Region Filter Buttons -->
+          <div class="flex flex-wrap items-center gap-1.5 text-xs">
+            <span class="text-slate-400 font-semibold mr-1">Quick Filter:</span>
+            <button onclick="filterStateList('ALL')" class="state-region-btn px-2.5 py-1 rounded-md bg-slate-100 text-slate-700 font-medium hover:bg-slate-200">All (36)</button>
+            <button onclick="filterStateList('North')" class="state-region-btn px-2.5 py-1 rounded-md bg-slate-100 text-slate-700 font-medium hover:bg-slate-200">North</button>
+            <button onclick="filterStateList('South')" class="state-region-btn px-2.5 py-1 rounded-md bg-slate-100 text-slate-700 font-medium hover:bg-slate-200">South</button>
+            <button onclick="filterStateList('East')" class="state-region-btn px-2.5 py-1 rounded-md bg-slate-100 text-slate-700 font-medium hover:bg-slate-200">East</button>
+            <button onclick="filterStateList('West')" class="state-region-btn px-2.5 py-1 rounded-md bg-slate-100 text-slate-700 font-medium hover:bg-slate-200">West</button>
+            <button onclick="filterStateList('Central')" class="state-region-btn px-2.5 py-1 rounded-md bg-slate-100 text-slate-700 font-medium hover:bg-slate-200">Central</button>
+            <button onclick="filterStateList('North-East')" class="state-region-btn px-2.5 py-1 rounded-md bg-slate-100 text-slate-700 font-medium hover:bg-slate-200">North-East</button>
+            <button onclick="filterStateList('UT')" class="state-region-btn px-2.5 py-1 rounded-md bg-slate-100 text-slate-700 font-medium hover:bg-slate-200">UTs</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Active State Ecosystem Detail Display -->
+      <div id="state-detail-card" class="bg-white rounded-xl shadow-md border border-slate-200 p-6 space-y-6">
+        <!-- JS populates full ecosystem card here -->
+      </div>
+    </section>
+
+    <!-- VIEW 3: SECTOR DEEP-DIVE HUB -->
+    <section id="view-sectors" class="hidden space-y-6">
+      
+      <!-- Section Intro Header -->
+      <div class="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4 sm:p-5">
+        <h2 class="text-xl sm:text-2xl font-bold text-slate-900 mb-1">
+          Sector-Specific Government & Technical Recruitment Pathways
+        </h2>
+        <p class="text-slate-600 text-sm leading-relaxed">
+          Central government and specialized public sectors conduct dedicated examinations structured by career domains. Explore detailed breakdowns of exams across Banking, Railways, Defence, Engineering/PSUs, Teaching, Judiciary, Healthcare, Statistics, and Research.
+        </p>
+      </div>
+
+      <!-- Sector Interactive Accordion Container -->
+      <div id="sector-accordion-container" class="space-y-4">
+        <!-- JS renders sector accordions -->
+      </div>
+    </section>
+
+    <!-- VIEW 4: QUALIFICATION PATHFINDER -->
+    <section id="view-pathfinder" class="hidden space-y-6">
+      
+      <!-- Section Intro Header -->
+      <div class="bg-sky-500/10 border border-sky-500/20 rounded-xl p-4 sm:p-5">
+        <h2 class="text-xl sm:text-2xl font-bold text-slate-900 mb-1">
+          Personalized Exam Pathfinder
+        </h2>
+        <p class="text-slate-600 text-sm leading-relaxed">
+          Not sure which exams you are eligible for? Select your current highest education level, your preferred career domain, and your state to generate a customized breakdown of matching entrance tests and government job recruitments.
+        </p>
+      </div>
+
+      <!-- Interactive Pathfinder Input Card -->
+      <div class="bg-white rounded-xl shadow-md border border-slate-200 p-6 space-y-5">
+        <h3 class="text-lg font-bold text-slate-900 border-b border-slate-100 pb-3">
+          Step 1: Enter Your Academic & Career Profile
+        </h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <!-- Qualification Selector -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">1. Your Qualification Level</label>
+            <select id="pf-qual" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 bg-white">
+              <option value="10th Pass">10th Pass / Secondary School</option>
+              <option value="12th Pass">12th Pass / Higher Secondary (Science/Arts/Commerce)</option>
+              <option value="Graduation">Graduate (General Degree - BA / B.Sc / B.Com / Any Degree)</option>
+              <option value="Engineering Degree">Engineering Graduate (B.E / B.Tech)</option>
+              <option value="Law Degree">Law Graduate (LL.B)</option>
+              <option value="Medical Degree">Medical / Healthcare Graduate (MBBS / Nursing / Pharma)</option>
+              <option value="Post Graduation">Post Graduate / Master's Degree</option>
+            </select>
+          </div>
+
+          <!-- Sector Preference -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">2. Preferred Career Domain</label>
+            <select id="pf-sector" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 bg-white">
+              <option value="ALL">Any Sector / All Opportunities</option>
+              <option value="College Entrance">College Entrance (Engineering Admissions)</option>
+              <option value="Civil Services">Civil Services & Administrative Officers</option>
+              <option value="Banking & Regulatory">Banking & Financial Regulatory</option>
+              <option value="Railways & Defence">Railways, Defence & Armed Forces</option>
+              <option value="Police & Paramilitary">Police & Paramilitary Forces</option>
+              <option value="Technical & PSUs">Engineering & PSU Direct Recruitment</option>
+              <option value="Teaching & Education">Teaching & Academics</option>
+              <option value="Judiciary & Legal">Judiciary & Legal Officers</option>
+              <option value="Healthcare & Science">Healthcare, Science & Research</option>
+            </select>
+          </div>
+
+          <!-- Target State -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">3. Your Target State / Union Territory</label>
+            <select id="pf-state" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 bg-white">
+              <!-- Populated via JS -->
+            </select>
+          </div>
+        </div>
+
+        <div class="pt-2 flex justify-end">
+          <button onclick="runPathfinder()" class="px-6 py-2.5 bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-lg shadow transition-all text-sm">
+            🎯 Generate Matching Exam List
+          </button>
+        </div>
+      </div>
+
+      <!-- Pathfinder Results Section -->
+      <div id="pathfinder-results" class="hidden space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-bold text-slate-900">
+            Pathfinder Matches: <span id="pf-match-count" class="text-sky-600">0</span> Eligible Exam Routes Found
+          </h3>
+        </div>
+        <div id="pf-results-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 5: ANALYTICS & COMPARISON DASHBOARD -->
+    <section id="view-analytics" class="hidden space-y-6">
+      
+      <!-- Section Intro Header -->
+      <div class="bg-purple-500/10 border border-purple-500/20 rounded-xl p-4 sm:p-5">
+        <h2 class="text-xl sm:text-2xl font-bold text-slate-900 mb-1">
+          Exam Ecosystem Analytics & Side-by-Side Comparison
+        </h2>
+        <p class="text-slate-600 text-sm leading-relaxed">
+          Gain deeper data-driven insights into how Indian competitive examinations are distributed across career sectors and educational qualifications. Use the interactive comparison matrix below to contrast any two major examinations side by side.
+        </p>
+      </div>
+
+      <!-- Charts Section Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        
+        <!-- Chart 1: Sectoral Distribution -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 space-y-3">
+          <div class="border-b border-slate-100 pb-2">
+            <h3 class="font-bold text-slate-900 text-base">Sectoral Distribution of Major Exams</h3>
+            <p class="text-xs text-slate-500">Breakdown of tracked national and state level examinations by sector category</p>
+          </div>
+          <!-- Canvas Wrapper in Responsive Chart Container -->
+          <div class="chart-container">
+            <canvas id="chart-sectors"></canvas>
+          </div>
+        </div>
+
+        <!-- Chart 2: Minimum Qualification Breakdown -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 space-y-3">
+          <div class="border-b border-slate-100 pb-2">
+            <h3 class="font-bold text-slate-900 text-base">Minimum Qualification Requirements</h3>
+            <p class="text-xs text-slate-500">Proportion of examinations accessible by entry qualification level</p>
+          </div>
+          <!-- Canvas Wrapper in Responsive Chart Container -->
+          <div class="chart-container">
+            <canvas id="chart-qualifications"></canvas>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Dynamic Side-by-Side Exam Comparison Tool -->
+      <div class="bg-white rounded-xl shadow-md border border-slate-200 p-6 space-y-5">
+        <div class="border-b border-slate-100 pb-3">
+          <h3 class="text-lg font-bold text-slate-900">
+            ⚔️ Side-by-Side Exam Comparison Matrix
+          </h3>
+          <p class="text-slate-500 text-xs">Select two examinations to contrast their conducting agencies, minimum qualifications, scope, and key career profiles.</p>
+        </div>
+
+        <!-- Selector Controls -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">Select First Exam (A)</label>
+            <select id="compare-exam-a" onchange="updateComparisonTable()" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-500 bg-white">
+              <!-- JS Populates Options -->
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">Select Second Exam (B)</label>
+            <select id="compare-exam-b" onchange="updateComparisonTable()" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-500 bg-white">
+              <!-- JS Populates Options -->
+            </select>
+          </div>
+        </div>
+
+        <!-- Dynamic Comparison Table Container -->
+        <div id="comparison-table-wrapper" class="overflow-x-auto custom-scrollbar pt-2">
+          <!-- JS renders table -->
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Global Footer -->
+  <footer class="bg-slate-900 text-slate-400 text-xs border-t border-slate-800 py-6 mt-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div>
+        <p class="font-semibold text-slate-200">Bharat Exam Navigator & Directory</p>
+        <p class="mt-0.5 text-slate-400">Synthesizing State College Entrances, Central Recruitments, and Departmental Examinations</p>
+      </div>
+      <div class="text-slate-500 text-center md:text-right">
+        <p>Built for educational and career exploration across Indian States & Union Territories.</p>
+        <p class="text-slate-600">Note: Always verify exact eligibility and notification details on official departmental portals.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Application JavaScript Logic -->
+  <script>
+    /* ==========================================================================
+       1. DATA STRUCTURES: EXAMS & STATES DATABASE
+       ========================================================================== */
+
+    const ALL_EXAMS_DATA = [
+      // COLLEGE ENTRANCE EXAMS (STATE-LEVEL B.TECH / CET)
+      { id: "AP_EAPCET", name: "AP EAPCET", sector: "College Entrance", scope: "State Specific", state: "Andhra Pradesh", minEligibility: "12th Pass", agency: "JNTU / APSCHE", details: "State-level entrance exam for admission into Engineering, Agriculture, and Pharmacy courses in Andhra Pradesh." },
+      { id: "ASSAM_CEE", name: "Assam CEE", sector: "College Entrance", scope: "State Specific", state: "Assam", minEligibility: "12th Pass", agency: "ASTU", details: "Combined Entrance Examination conducted by Assam Science and Technology University for B.Tech admissions." },
+      { id: "GUJCET", name: "GUJCET", sector: "College Entrance", scope: "State Specific", state: "Gujarat", minEligibility: "12th Pass", agency: "GSEB", details: "Gujarat Common Entrance Test for engineering and degree/diploma pharmacy admissions across Gujarat." },
+      { id: "KCET", name: "KCET (Karnataka CET)", sector: "College Entrance", scope: "State Specific", state: "Karnataka", minEligibility: "12th Pass", agency: "KEA", details: "Karnataka Examinations Authority test for professional courses including B.Tech, Farm Science, and Pharma." },
+      { id: "COMEDK_UGET", name: "COMEDK UGET", sector: "College Entrance", scope: "State Specific", state: "Karnataka", minEligibility: "12th Pass", agency: "COMEDK", details: "Undergraduate Entrance Test for private engineering colleges across Karnataka." },
+      { id: "KEAM", name: "KEAM", sector: "College Entrance", scope: "State Specific", state: "Kerala", minEligibility: "12th Pass", agency: "CEE Kerala", details: "Kerala Engineering Architecture Medical Entrance Exam for engineering degree courses in Kerala." },
+      { id: "MHT_CET", name: "MHT CET", sector: "College Entrance", scope: "State Specific", state: "Maharashtra", minEligibility: "12th Pass", agency: "State CET Cell Maharashtra", details: "State Common Entrance Test for B.E / B.Tech and B.Pharm courses in Maharashtra colleges." },
+      { id: "OJEE", name: "OJEE", sector: "College Entrance", scope: "State Specific", state: "Odisha", minEligibility: "12th Pass", agency: "OJEE Committee", details: "Odisha Joint Entrance Examination for state quota engineering seat counseling and lateral entries." },
+      { id: "TS_EAPCET", name: "TS EAPCET", sector: "College Entrance", scope: "State Specific", state: "Telangana", minEligibility: "12th Pass", agency: "JNTUH / TSCHE", details: "Telangana Engineering, Agriculture and Pharmacy Common Entrance Test." },
+      { id: "TJEE", name: "TJEE (Tripura JEE)", sector: "College Entrance", scope: "State Specific", state: "Tripura", minEligibility: "12th Pass", agency: "Tripura Board of Joint Entrance", details: "State entrance test for degree engineering seats in Tripura." },
+      { id: "WBJEE", name: "WBJEE", sector: "College Entrance", scope: "State Specific", state: "West Bengal", minEligibility: "12th Pass", agency: "WBJEEB", details: "West Bengal Joint Entrance Examinations Board test for engineering/technology admissions." },
+      { id: "CG_PET", name: "CG PET", sector: "College Entrance", scope: "State Specific", state: "Chhattisgarh", minEligibility: "12th Pass", agency: "CG Vyapam", details: "Chhattisgarh Pre-Engineering Test for state technical institution admissions." },
+      { id: "HPCET", name: "HPCET", sector: "College Entrance", scope: "State Specific", state: "Himachal Pradesh", minEligibility: "12th Pass", agency: "HPTU", details: "Himachal Pradesh Common Entrance Test for technical undergraduate programs." },
+      { id: "JKCET", name: "JKCET", sector: "College Entrance", scope: "State Specific", state: "Jammu & Kashmir", minEligibility: "12th Pass", agency: "JKBOPEE", details: "Jammu & Kashmir Board of Professional Entrance Examinations for state B.Tech seats." },
+      { id: "BCECE", name: "BCECE / JEE Main Route", sector: "College Entrance", scope: "State Specific", state: "Bihar", minEligibility: "12th Pass", agency: "BCECE Board", details: "Bihar Combined Entrance Competitive Examination board counseling based on JEE Main / BCECE rules." },
+      { id: "TNEA", name: "TNEA (Tamil Nadu Admissions)", sector: "College Entrance", scope: "State Specific", state: "Tamil Nadu", minEligibility: "12th Pass", agency: "Anna University / DoTE", details: "Tamil Nadu Engineering Admissions - Class 12 marks merit-based counseling without a separate CET." },
+      { id: "REAP_RAJASTHAN", name: "REAP Rajasthan", sector: "College Entrance", scope: "State Specific", state: "Rajasthan", minEligibility: "12th Pass", agency: "CEAP / Rajasthan Govt", details: "Rajasthan Engineering Admission Process - Merit counseling based on JEE Main or 12th marks." },
+      { id: "HSTES_HARYANA", name: "HSTES Haryana", sector: "College Entrance", scope: "State Specific", state: "Haryana", minEligibility: "12th Pass", agency: "HSTES", details: "Haryana State Technical Education Society counseling based on JEE Main ranks." },
+      { id: "UPTAC_UP", name: "UPTAC (UP Engineering)", sector: "College Entrance", scope: "State Specific", state: "Uttar Pradesh", minEligibility: "12th Pass", agency: "AKTU / UPTAC", details: "Uttar Pradesh Technical Admission Counselling for state colleges using JEE Main scores." },
+
+      // CENTRAL GOVT - UPSC
+      { id: "UPSC_CSE", name: "UPSC Civil Services Examination (CSE)", sector: "Central Govt - UPSC", scope: "National", state: "All India", minEligibility: "Graduation", agency: "UPSC", details: "Premier national exam for IAS, IPS, IFS, IRS, and central administrative services." },
+      { id: "UPSC_IFOS", name: "UPSC Indian Forest Service (IFoS)", sector: "Central Govt - UPSC", scope: "National", state: "All India", minEligibility: "Graduation", agency: "UPSC", details: "Recruitment for officers in the Indian Forest Service cadre (prelims shared with CSE)." },
+      { id: "UPSC_ESE", name: "UPSC Engineering Services Exam (ESE / IES)", sector: "Central Govt - UPSC", scope: "National", state: "All India", minEligibility: "Engineering Degree", agency: "UPSC", details: "Recruitment of Class-1 Engineers in Railways, CPWD, Defence Aeronautical, and Power sectors." },
+      { id: "UPSC_CDS", name: "UPSC Combined Defence Services (CDS)", sector: "Central Govt - UPSC", scope: "National", state: "All India", minEligibility: "Graduation", agency: "UPSC", details: "Recruitment for Commissioned Officers in Indian Army (IMA/OTA), Navy (INA), and Air Force (AFA)." },
+      { id: "UPSC_NDA", name: "UPSC NDA & NA Exam", sector: "Central Govt - UPSC", scope: "National", state: "All India", minEligibility: "12th Pass", agency: "UPSC", details: "Entry exam for high school graduates to join National Defence Academy and Naval Academy." },
+      { id: "UPSC_CMS", name: "UPSC Combined Medical Services (CMS)", sector: "Central Govt - UPSC", scope: "National", state: "All India", minEligibility: "Medical Degree", agency: "UPSC", details: "Recruitment of Medical Officers in Railways, Municipal Corporations, and Central Health Services." },
+      { id: "UPSC_CAPF", name: "UPSC CAPF (Assistant Commandants)", sector: "Central Govt - UPSC", scope: "National", state: "All India", minEligibility: "Graduation", agency: "UPSC", details: "Direct officer recruitment for BSF, CRPF, CISF, ITBP, and SSB." },
+      { id: "UPSC_IES", name: "UPSC Indian Economic Service (IES)", sector: "Central Govt - UPSC", scope: "National", state: "All India", minEligibility: "Post Graduation", agency: "UPSC", details: "Specialized recruitment for postgraduate economists in central economic departments." },
+      { id: "UPSC_ISS", name: "UPSC Indian Statistical Service (ISS)", sector: "Central Govt - UPSC", scope: "National", state: "All India", minEligibility: "Graduation", agency: "UPSC", details: "Recruitment for statistical officers in the Ministry of Statistics and Programme Implementation." },
+      { id: "UPSC_GEO", name: "UPSC Combined Geo-Scientist Examination", sector: "Central Govt - UPSC", scope: "National", state: "All India", minEligibility: "Post Graduation", agency: "UPSC", details: "Recruitment of Geologists, Geophysicists, and Chemists in GSI and CGWB." },
+
+      // CENTRAL GOVT - SSC
+      { id: "SSC_CGL", name: "SSC CGL (Combined Graduate Level)", sector: "Central Govt - SSC", scope: "National", state: "All India", minEligibility: "Graduation", agency: "SSC", details: "Major recruitment exam for Inspectors (Income Tax, Central Excise), ASO in Ministries, Auditors, and JSO." },
+      { id: "SSC_CHSL", name: "SSC CHSL (10+2 Level)", sector: "Central Govt - SSC", scope: "National", state: "All India", minEligibility: "12th Pass", agency: "SSC", details: "Recruitment for Lower Division Clerks (LDC), Junior Secretariat Assistants (JSA), and Data Entry Operators (DEO)." },
+      { id: "SSC_MTS", name: "SSC MTS & Havaldar", sector: "Central Govt - SSC", scope: "National", state: "All India", minEligibility: "10th Pass", agency: "SSC", details: "General Central Service Group 'C' non-gazetted recruitment across central government ministries." },
+      { id: "SSC_CPO", name: "SSC CPO (Sub-Inspector in Delhi Police & CAPFs)", sector: "Central Govt - SSC", scope: "National", state: "All India", minEligibility: "Graduation", agency: "SSC", details: "Recruitment of Sub-Inspectors in Delhi Police, BSF, CISF, CRPF, ITBP, and SSB." },
+      { id: "SSC_JE", name: "SSC JE (Junior Engineer)", sector: "Central Govt - SSC", scope: "National", state: "All India", minEligibility: "Engineering Degree", agency: "SSC", details: "Recruitment of Junior Engineers (Civil, Electrical, Mechanical) in CPWD, MES, CWC." },
+      { id: "SSC_GD", name: "SSC GD Constable", sector: "Central Govt - SSC", scope: "National", state: "All India", minEligibility: "10th Pass", agency: "SSC", details: "Mass recruitment for Constables in BSF, CISF, ITBP, SSB, CRPF, SSF, and Rifleman in Assam Rifles." },
+      { id: "SSC_STENO", name: "SSC Stenographer Grade C & D", sector: "Central Govt - SSC", scope: "National", state: "All India", minEligibility: "12th Pass", agency: "SSC", details: "Recruitment for official stenographers in central ministries and subordinate offices." },
+
+      // BANKING & REGULATORY
+      { id: "IBPS_PO", name: "IBPS PO / MT", sector: "Banking & Regulatory", scope: "National", state: "All India", minEligibility: "Graduation", agency: "IBPS", details: "Probationary Officer / Management Trainee recruitment across participating Public Sector Banks." },
+      { id: "IBPS_CLERK", name: "IBPS Clerk", sector: "Banking & Regulatory", scope: "National", state: "All India", minEligibility: "Graduation", agency: "IBPS", details: "Clerical cadre recruitment in public sector banks across state-wise vacancies." },
+      { id: "IBPS_SO", name: "IBPS Specialist Officer (SO)", sector: "Banking & Regulatory", scope: "National", state: "All India", minEligibility: "Graduation", agency: "IBPS", details: "Specialist positions including IT Officer, Agricultural Field Officer, Rajbhasha Adhikari, Law Officer, HR, and Marketing Officer." },
+      { id: "IBPS_RRB", name: "IBPS RRB Officer Scale I, II, III & Office Assistant", sector: "Banking & Regulatory", scope: "National", state: "All India", minEligibility: "Graduation", agency: "IBPS", details: "Recruitment for Regional Rural Banks across India for officer and assistant roles." },
+      { id: "SBI_PO", name: "SBI Probationary Officer (PO)", sector: "Banking & Regulatory", scope: "National", state: "All India", minEligibility: "Graduation", agency: "State Bank of India", details: "Premier recruitment exam for PO cadre in State Bank of India." },
+      { id: "SBI_CLERK", name: "SBI Junior Associates (Clerk)", sector: "Banking & Regulatory", scope: "National", state: "All India", minEligibility: "Graduation", agency: "State Bank of India", details: "Customer Support & Sales clerical cadre recruitment in SBI." },
+      { id: "RBI_GRADE_B", name: "RBI Grade B Officer", sector: "Banking & Regulatory", scope: "National", state: "All India", minEligibility: "Graduation", agency: "Reserve Bank of India", details: "Direct Officer recruitment in RBI General, DEPR (Economics), and DSIM (Statistics) cadres." },
+      { id: "NABARD_GRADE_A", name: "NABARD Grade A & B Officer", sector: "Banking & Regulatory", scope: "National", state: "All India", minEligibility: "Graduation", agency: "NABARD", details: "Assistant Manager recruitment in Rural Development Banking Service." },
+      { id: "SEBI_GRADE_A", name: "SEBI Grade A Assistant Manager", sector: "Banking & Regulatory", scope: "National", state: "All India", minEligibility: "Graduation", agency: "SEBI", details: "Regulatory officer recruitment in General, Legal, Information Technology, and Research streams." },
+      { id: "LIC_AAO", name: "LIC AAO (Assistant Administrative Officer)", sector: "Banking & Regulatory", scope: "National", state: "All India", minEligibility: "Graduation", agency: "LIC of India", details: "Officer cadre recruitment in Life Insurance Corporation of India." },
+
+      // RAILWAYS (RRB/RRC)
+      { id: "RRB_NTPC", name: "RRB NTPC (Non-Technical Popular Categories)", sector: "Railways (RRB/RRC)", scope: "National", state: "All India", minEligibility: "12th Pass", agency: "Railway Recruitment Boards", details: "Recruitment for Station Master, Goods Guard, Commercial Apprentice, Junior Clerk, and Typist." },
+      { id: "RRB_GROUP_D", name: "RRB Group D (Level-1 Posts)", sector: "Railways (RRB/RRC)", scope: "National", state: "All India", minEligibility: "10th Pass", agency: "RRC / RRB", details: "Mass recruitment for Track Maintainer Grade IV, Helper/Assistant in technical departments." },
+      { id: "RRB_ALP", name: "RRB Assistant Loco Pilot (ALP) & Technician", sector: "Railways (RRB/RRC)", scope: "National", state: "All India", minEligibility: "10th Pass", agency: "RRB", details: "Recruitment for Loco Pilots and Skilled Technicians requiring ITI / Diploma / Engineering." },
+      { id: "RRB_JE", name: "RRB JE (Junior Engineer & Depot Material Supdt)", sector: "Railways (RRB/RRC)", scope: "National", state: "All India", minEligibility: "Engineering Degree", agency: "RRB", details: "Technical recruitment for Junior Engineers in Indian Railways." },
+      { id: "RPF_CONSTABLE_SI", name: "RPF Constable & Sub-Inspector", sector: "Railways (RRB/RRC)", scope: "National", state: "All India", minEligibility: "10th Pass", agency: "Railway Protection Force", details: "Security personnel recruitment for Railway Protection Force and Railway Protection Special Force." },
+
+      // DEFENCE & ARMED FORCES
+      { id: "DEF_AGNIVEER", name: "Agniveer Scheme (Army, Navy, Air Force)", sector: "Defence & Armed Forces", scope: "National", state: "All India", minEligibility: "10th Pass", agency: "Indian Armed Forces", details: "4-year short service entry for soldiers, sailors, and air warriors across branches." },
+      { id: "DEF_AFCAT", name: "AFCAT (Air Force Common Admission Test)", sector: "Defence & Armed Forces", scope: "National", state: "All India", minEligibility: "Graduation", agency: "Indian Air Force", details: "Officer entry for Flying Branch and Ground Duty (Technical and Non-Technical) branches." },
+
+      // TEACHING & EDUCATION
+      { id: "TEACH_CTET", name: "CTET (Central Teacher Eligibility Test)", sector: "Teaching & Education", scope: "National", state: "All India", minEligibility: "12th Pass", agency: "CBSE", details: "National eligibility certification for teaching in central government schools (KVS, NVS, Army Schools)." },
+      { id: "TEACH_UGC_NET", name: "UGC NET / JRF", sector: "Teaching & Education", scope: "National", state: "All India", minEligibility: "Post Graduation", agency: "NTA", details: "National Eligibility Test for Assistant Professorship and Junior Research Fellowship in Indian Universities." },
+      { id: "TEACH_CSIR_NET", name: "CSIR-UGC NET", sector: "Teaching & Education", scope: "National", state: "All India", minEligibility: "Graduation", agency: "NTA / CSIR", details: "Eligibility test for Assistant Professorship and JRF in Science & Technology streams." },
+
+      // TECHNICAL & PSUs
+      { id: "GATE_PSU", name: "GATE (Graduate Aptitude Test in Engineering)", sector: "Technical & PSUs", scope: "National", state: "All India", minEligibility: "Engineering Degree", agency: "IITs / IISc", details: "Standardized exam for M.Tech admissions and direct executive recruitment in top PSUs (ONGC, NTPC, BHEL, GAIL, IOCL, HPCL, PGCIL)." },
+      { id: "ISRO_DRDO", name: "ISRO & DRDO Scientist/Engineer Entry", sector: "Technical & PSUs", scope: "National", state: "All India", minEligibility: "Engineering Degree", agency: "ICRB / RAC DRDO", details: "Direct recruitment of Scientist 'B' / Engineers in India's premier space and defence research institutes." },
+
+      // STATE PSC & CIVIL SERVICES
+      { id: "UPPSC_PCS", name: "UPPSC Combined State / Upper Subordinate (PCS)", sector: "State Govt Recruitment", scope: "State Specific", state: "Uttar Pradesh", minEligibility: "Graduation", agency: "UPPSC", details: "State civil services exam for Deputy Collector, DSP, Block Development Officer, and Revenue Officers." },
+      { id: "MPSC_RAJYASEVA", name: "MPSC State Services (Rajyaseva)", sector: "State Govt Recruitment", scope: "State Specific", state: "Maharashtra", minEligibility: "Graduation", agency: "MPSC", details: "Class 1 and Class 2 officer recruitment in Maharashtra administrative departments." },
+      { id: "BPSC_CCE", name: "BPSC Combined Competitive Examination", sector: "State Govt Recruitment", scope: "State Specific", state: "Bihar", minEligibility: "Graduation", agency: "BPSC", details: "Bihar state administrative services and officer cadre competitive examination." },
+      { id: "RPSC_RAS", name: "RPSC RAS / RTS Exam", sector: "State Govt Recruitment", scope: "State Specific", state: "Rajasthan", minEligibility: "Graduation", agency: "RPSC", details: "Rajasthan Administrative Service and Subordinate Services examination." },
+      { id: "GPSC_CLASS_12", name: "GPSC Gujarat Administrative Service Class 1 & 2", sector: "State Govt Recruitment", scope: "State Specific", state: "Gujarat", minEligibility: "Graduation", agency: "GPSC", details: "Civil services administrative officer examination for Gujarat state." },
+      { id: "TNPSC_GROUP_1", name: "TNPSC Group I & II Services", sector: "State Govt Recruitment", scope: "State Specific", state: "Tamil Nadu", minEligibility: "Graduation", agency: "TNPSC", details: "Tamil Nadu public service civil cadre examinations." },
+      { id: "KPSC_KAS", name: "KPSC Gazetted Probationers (KAS)", sector: "State Govt Recruitment", scope: "State Specific", state: "Karnataka", minEligibility: "Graduation", agency: "KPSC", details: "Karnataka Administrative Service officer recruitment." },
+      { id: "APPSC_GROUP_1", name: "APPSC Group 1 & Group 2", sector: "State Govt Recruitment", scope: "State Specific", state: "Andhra Pradesh", minEligibility: "Graduation", agency: "APPSC", details: "Andhra Pradesh executive and non-executive officer recruitment." },
+      { id: "TGPSC_GROUP_1", name: "TGPSC Group I, II, III & IV", sector: "State Govt Recruitment", scope: "State Specific", state: "Telangana", minEligibility: "Graduation", agency: "TGPSC", details: "Telangana State Public Service Commission major service examinations." },
+      { id: "WBPSC_WBCS", name: "WBPSC Civil Service (Exe) Exam - WBCS", sector: "State Govt Recruitment", scope: "State Specific", state: "West Bengal", minEligibility: "Graduation", agency: "WBPSC", details: "West Bengal Civil Service cadre recruitment examination." }
+    ];
+
+    const STATES_ECOSYSTEM_DATA = {
+      "Andhra Pradesh": {
+        region: "South",
+        entrance: "AP EAPCET (Engineering, Agriculture & Pharmacy)",
+        psc: "APPSC (Group 1, Group 2, Group 3, Group 4, Assistant Engineer, AEE)",
+        police: "AP Police Recruitment Board (SI, Police Constable, State Armed Reserve)",
+        subordinate: "AP District Selection Committee / Departmental Boards",
+        teacher: "AP TET & DSC Teacher Recruitment Examination",
+        notes: "Major engineering admissions are handled through AP EAPCET counseling."
+      },
+      "Arunachal Pradesh": {
+        region: "North-East",
+        entrance: "JEE Main / Direct Central Institute Seats (No major state engineering CET)",
+        psc: "APPSC Arunachal (Combined Competitive Exam, AE, Lecturer, Group B/C)",
+        police: "Arunachal Pradesh Police Recruitment Board",
+        subordinate: "APSSB (Arunachal Pradesh Staff Selection Board)",
+        teacher: "Arunachal TET & Departmental Teacher Recruitment",
+        notes: "Technical admissions rely on JEE Main score merit lists."
+      },
+      "Assam": {
+        region: "North-East",
+        entrance: "Assam CEE (Combined Entrance Examination by ASTU)",
+        psc: "APSC (Combined Competitive Exam - CCE, Finance, Police Service, AE, AEE)",
+        police: "SLPRB Assam (State Level Police Recruitment Board - SI, Constable)",
+        subordinate: "ADRE (Assam Direct Recruitment Examination - Grade III & IV)",
+        teacher: "Assam TET & Secondary Teacher Recruitment",
+        notes: "ADRE conducts large unified recruitment drives for Grade 3 and Grade 4 state posts."
+      },
+      "Bihar": {
+        region: "East",
+        entrance: "BCECE / JEE Main-based Counseling Routes",
+        psc: "BPSC (Combined Competitive Exam, TRE Teacher Recruitment, AE, Judicial)",
+        police: "BPSSC (Sub-Inspector) & CSBC (Police Constable)",
+        subordinate: "BSSC (Bihar Staff Selection Commission) & BTSC (Technical)",
+        teacher: "Bihar STET & BPSC TRE (Teacher Recruitment Exam)",
+        notes: "BPSC TRE is currently one of India's largest state teacher recruitment drives."
+      },
+      "Chhattisgarh": {
+        region: "Central",
+        entrance: "CG PET (Pre-Engineering Test by CG Vyapam)",
+        psc: "CGPSC (State Service Exam, Forest Service, AE, Assistant Professor)",
+        police: "Chhattisgarh Police Recruitment Board",
+        subordinate: "CG Vyapam (Professional Examination Board - Patwari, Clerical)",
+        teacher: "CG TET & School Education Department Recruitment",
+        notes: "CG Vyapam conducts general recruitment for subordinate technical/clerical cadres."
+      },
+      "Goa": {
+        region: "West",
+        entrance: "JEE Main-based Admissions for State Colleges",
+        psc: "Goa PSC (Civil Service, Medical Officer, Assistant Professor, AE)",
+        police: "Goa Police Department Recruitment",
+        subordinate: "Goa Staff Selection Commission / Direct Departmental Recruitment",
+        teacher: "Goa TET & Education Department Entry",
+        notes: "Degree engineering seats are filled via JEE Main merit lists."
+      },
+      "Gujarat": {
+        region: "West",
+        entrance: "GUJCET (Gujarat Common Entrance Test)",
+        psc: "GPSC (Gujarat Administrative Service Class 1 & 2, Engineering, Medical)",
+        police: "Gujarat Police Recruitment Board (Lokrakshak, SI)",
+        subordinate: "GSSSB (Gujarat Subordinate Service Selection Board - Revenue, Clerical)",
+        teacher: "Gujarat TET / TAT Exams",
+        notes: "GUJCET is combined with Class 12 board marks for Gujarat engineering admissions."
+      },
+      "Haryana": {
+        region: "North",
+        entrance: "JEE Main + HSTES Counseling Route",
+        psc: "HPSC (HCS - Haryana Civil Services, Allied, AE, Lecturer)",
+        police: "Haryana Police Recruitment (via HSSC CET)",
+        subordinate: "HSSC (Haryana Staff Selection Commission - CET Group C & D)",
+        teacher: "HTET (Haryana Teacher Eligibility Test)",
+        notes: "Group C and D recruitments are funneled through the Haryana CET system."
+      },
+      "Himachal Pradesh": {
+        region: "North",
+        entrance: "HPCET (Himachal Pradesh Common Entrance Test by HPTU)",
+        psc: "HPPSC (HPAS - HP Administrative Service, Forest, Allied Services, AE)",
+        police: "Himachal Pradesh Police Recruitment Board",
+        subordinate: "HPSSSB / HP Staff Selection Commission & Departmental Boards",
+        teacher: "HP TET & School Lecturer Examinations",
+        notes: "HPCET offers state quota seats in state government engineering colleges."
+      },
+      "Jharkhand": {
+        region: "East",
+        entrance: "JEE Main-based B.Tech Admission Counseling",
+        psc: "JPSC (Combined Civil Services, Forest Service, AE, Medical Officer)",
+        police: "Jharkhand Police Recruitment Board (via JSSC)",
+        subordinate: "JSSC (Jharkhand Staff Selection Commission - CGL, Intermediate Level)",
+        teacher: "JTET (Jharkhand Teacher Eligibility Test)",
+        notes: "JCECE Board conducts counseling based on JEE Main ranks."
+      },
+      "Karnataka": {
+        region: "South",
+        entrance: "KCET (KEA) & COMEDK UGET (Private Colleges)",
+        psc: "KPSC (Gazetted Probationers - KAS, Group B/C, AE, JE)",
+        police: "Karnataka State Police Recruitment (KSP - PSI, Police Constable)",
+        subordinate: "KEA & KPSC Subordinate Services",
+        teacher: "Karnataka TET & Graduate Primary School Teacher Recruitment",
+        notes: "Karnataka features dual entrance pathways: KCET for state quota and COMEDK for private quota."
+      },
+      "Kerala": {
+        region: "South",
+        entrance: "KEAM (Kerala Engineering Architecture Medical Entrance)",
+        psc: "Kerala PSC (KAS - Kerala Administrative Service, Degree/Plus-Two Level, AE)",
+        police: "Kerala Police Sub-Inspector & Police Constable (via Kerala PSC)",
+        subordinate: "Kerala PSC (Unified state-wide testing body for all levels)",
+        teacher: "KTET (Kerala Teacher Eligibility Test)",
+        notes: "Kerala PSC handles virtually all state public recruitment centrally."
+      },
+      "Madhya Pradesh": {
+        region: "Central",
+        entrance: "JEE Main-based MP B.Tech Admissions",
+        psc: "MPPSC (State Service Exam, Forest Service, Assistant Professor, Engineering)",
+        police: "MP Police Constable & Sub-Inspector (via MPESB)",
+        subordinate: "MPESB (Professional Examination Board / Vyapam - Patwari, Group 2/3/4)",
+        teacher: "MP TET (Primary/Middle/High School Teacher Eligibility)",
+        notes: "MPESB conducts major non-gazetted technical and general recruitment tests."
+      },
+      "Maharashtra": {
+        region: "West",
+        entrance: "MHT CET (State CET Cell Maharashtra)",
+        psc: "MPSC (Rajyaseva / State Services, Civil Engineering, Forest, Group B/C)",
+        police: "Maharashtra Police Bharti (Constable, Police Driver, SI)",
+        subordinate: "Talasathi, Zilla Parishad & District Selection Committees",
+        teacher: "Maha TET & TAIT Exam",
+        notes: "MHT CET is one of the highest volume state engineering entrance exams in India."
+      },
+      "Manipur": {
+        region: "North-East",
+        entrance: "JEE Main / Central Institute Admission Routes",
+        psc: "Manipur PSC (Combined Competitive Examination, Engineering Services)",
+        police: "Manipur Police Department Recruitment",
+        subordinate: "Manipur Staff Selection Commission / Departmental Entry",
+        teacher: "Manipur TET",
+        notes: "State B.Tech seats are primarily filled using JEE Main scores."
+      },
+      "Meghalaya": {
+        region: "North-East",
+        entrance: "JEE Main / Institute Level Admission Routes",
+        psc: "Meghalaya PSC (MCS, MPS, Engineering Services, Lecturer)",
+        police: "Meghalaya Police Central Recruitment Board",
+        subordinate: "District Selection Committees (DSC Meghalaya)",
+        teacher: "Meghalaya TET (MTET)",
+        notes: "Engineering seats utilize JEE Main rankings and institute quotas."
+      },
+      "Mizoram": {
+        region: "North-East",
+        entrance: "JEE Main / Central Seat Allocation Routes",
+        psc: "Mizoram PSC (Civil Services, Engineering Services, Group A/B)",
+        police: "Mizoram Police Recruitment Board",
+        subordinate: "Mizoram Subordinate Services Selection Board",
+        teacher: "Mizoram TET (MTET)",
+        notes: "Technical admissions rely on JEE Main rank lists."
+      },
+      "Nagaland": {
+        region: "North-East",
+        entrance: "JEE Main / Central Institute Routes",
+        psc: "NPSC (Nagaland Civil Service, Police Service, Engineering Services)",
+        police: "Nagaland Police Recruitment Board",
+        subordinate: "Nagaland Staff Selection Board (NSSB)",
+        teacher: "Nagaland TET",
+        notes: "NSSB manages group C recruitment across state departments."
+      },
+      "Odisha": {
+        region: "East",
+        entrance: "OJEE & JEE Main-based B.Tech Admission",
+        psc: "OPSC (Odisha Civil Services, Judicial, AEE, Assistant Professor)",
+        police: "State Selection Board Odisha Police (Constable, SI)",
+        subordinate: "OSSC (Non-gazetted Group B) & OSSSC (Group C / RI / Amin / Anm)",
+        teacher: "OTET & OSSTET (Odisha Teacher Eligibility Test)",
+        notes: "OSSC and OSSSC handle non-gazetted technical and general cadres respectively."
+      },
+      "Punjab": {
+        region: "North",
+        entrance: "JEE Main-based Admission Counseling (IKGPTU / MRSPTU)",
+        psc: "PPSC (Punjab Civil Services - PCS, Assistant Engineer, Lecturer)",
+        police: "Punjab Police Recruitment Board (Constable, Sub-Inspector)",
+        subordinate: "PSSSB (Punjab Subordinate Services Selection Board - Patwari, Clerk)",
+        teacher: "PSTET (Punjab State Teacher Eligibility Test)",
+        notes: "Engineering seats are allocated via state university counseling on JEE Main rank."
+      },
+      "Rajasthan": {
+        region: "West",
+        entrance: "REAP (Rajasthan Engineering Admission Process - Counseling Based)",
+        psc: "RPSC (RAS / RPS, Senior Teacher, Assistant Professor, AE)",
+        police: "Rajasthan Police Recruitment Board (Constable, SI)",
+        subordinate: "RSSB / RSMSSB (CET, Patwari, LDC, VDO, Junior Accountant)",
+        teacher: "REET (Rajasthan Eligibility Examination for Teachers)",
+        notes: "RSSB conducts Rajasthan CET for major non-gazetted recruitment eligibility."
+      },
+      "Sikkim": {
+        region: "North-East",
+        entrance: "JEE Main / Institute Seat Allotment Routes",
+        psc: "SPSC Sikkim (State Civil Service, State Police Service, AE, Lecturer)",
+        police: "Sikkim Police Department",
+        subordinate: "Departmental Selection Committees",
+        teacher: "STET (Sikkim Teacher Eligibility Test)",
+        notes: "Higher technical admissions are coordinated via JEE Main."
+      },
+      "Tamil Nadu": {
+        region: "South",
+        entrance: "TNEA (Class 12 Marks-Based Engineering Counseling - No CET)",
+        psc: "TNPSC (Group I, Group II/IIA, Group IV, Combined Engineering, Civil Judge)",
+        police: "TNUSRB (Tamil Nadu Uniformed Services Recruitment Board - Police, Fire, Prison)",
+        subordinate: "TNPSC Group IV & VAO Services",
+        teacher: "TRB Tamil Nadu (Teachers Recruitment Board) & TNTET",
+        notes: "Tamil Nadu has no state engineering CET; admissions use normalized Class 12 marks."
+      },
+      "Telangana": {
+        region: "South",
+        entrance: "TS EAPCET (Telangana Engineering Admissions Test)",
+        psc: "TGPSC (formerly TSPSC - Group I, II, III, IV, Assistant Engineer)",
+        police: "TSLPRB (Telangana State Level Police Recruitment Board)",
+        subordinate: "TGPSC Subordinate Cadres",
+        teacher: "TS TET & Gurukulam Teacher Recruitment Board",
+        notes: "TS EAPCET governs state engineering and pharmacy seat admissions."
+      },
+      "Tripura": {
+        region: "North-East",
+        entrance: "TJEE (Tripura Joint Entrance Examination)",
+        psc: "TPSC (Tripura Civil Service, Police Service, Engineering Services)",
+        police: "Tripura Police Recruitment Board",
+        subordinate: "Joint Recruitment Board Tripura (JRBT)",
+        teacher: "T-TET (Tripura Teacher Eligibility Test)",
+        notes: "TJEE provides state quota merit ranking for engineering degree programs."
+      },
+      "Uttar Pradesh": {
+        region: "North",
+        entrance: "UPTAC / AKTU Counseling (JEE Main Route)",
+        psc: "UPPSC (PCS, RO/ARO, Assistant Engineer, Civil Judge, Lecturer)",
+        police: "UPPRPB (UP Police Recruitment & Promotion Board - SI, Constable)",
+        subordinate: "UPSSSC (PET - Preliminary Eligibility Test, Lekhpal, VDO, Junior Assistant)",
+        teacher: "UPTET & UP Super TET (Basic Education Board)",
+        notes: "UPSSSC PET acts as the gateway test for all Group C administrative jobs in UP."
+      },
+      "Uttarakhand": {
+        region: "North",
+        entrance: "JEE Main-based UTU Admissions Counseling",
+        psc: "UKPSC (Combined State Upper/Lower Subordinate, AE, Forest, Judicial)",
+        police: "Uttarakhand Police Department (SI, Constable)",
+        subordinate: "UKSSSC (Uttarakhand Subordinate Service Selection Board - Patwari, Lekhpal)",
+        teacher: "UTET (Uttarakhand Teacher Eligibility Test)",
+        notes: "Technical undergraduate seats are allocated via UTU using JEE Main scores."
+      },
+      "West Bengal": {
+        region: "East",
+        entrance: "WBJEE (West Bengal Joint Entrance Examination)",
+        psc: "WBPSC (WBCS Civil Service, Miscellaneous, Audit & Accounts, Engineering)",
+        police: "West Bengal Police Recruitment Board (WBPRB - Constable, SI)",
+        subordinate: "WBSSC (West Bengal Staff Selection Commission) & Clerical Board",
+        teacher: "WB TET & WBSSC School Service Commission",
+        notes: "WBJEE is a primary state engineering entrance examination."
+      },
+      "Jammu & Kashmir": {
+        region: "UT",
+        entrance: "JKCET (JKBOPEE) / JEE Main Route",
+        psc: "JKPSC (Combined Competitive Examination, Medical Officer, Higher Education)",
+        police: "J&K Police Recruitment Board",
+        subordinate: "JKSSB (J&K Services Selection Board - Accounts Assistant, Panchayat)",
+        teacher: "JKUT Teacher Departmental Entry",
+        notes: "JKSSB handles massive non-gazetted recruitment across J&K districts."
+      },
+      "Delhi": {
+        region: "UT",
+        entrance: "JAC Delhi / IPU CET / JEE Main Admission Routes",
+        psc: "UPSC (Union Territory Cadre for IAS/IPS) & DSSSB for UT level officers",
+        police: "Delhi Police (Recruited via SSC CPO & SSC Delhi Police Constable)",
+        subordinate: "DSSSB (Delhi Subordinate Services Selection Board)",
+        teacher: "DSSSB Teacher Recruitment (TGT/PGT/PRT) + CTET",
+        notes: "DSSSB manages state-level teaching, clerical, healthcare, and administrative jobs in Delhi."
+      },
+      "Ladakh": {
+        region: "UT",
+        entrance: "JEE Main / Central University Seat Quotas",
+        psc: "UPSC / Ladakh UT Administration Direct Recruitment",
+        police: "Ladakh Police Recruitment Board",
+        subordinate: "Ladakh Autonomous Hill Development Council (LAHDC) / SSC Selection Post",
+        teacher: "UT Ladakh Education Department Entry",
+        notes: "SSC Selection Post includes dedicated Ladakh UT vacancies."
+      },
+      "Puducherry": {
+        region: "UT",
+        entrance: "CENTAC Counseling (JEE Main / Merit Based)",
+        psc: "UPSC (UT Cadre) & CENTAC / Direct UT Department Recruitment",
+        police: "Puducherry Police Department",
+        subordinate: "Puducherry Department of Personnel and Administrative Reforms",
+        teacher: "Puducherry Education Department Direct Entry",
+        notes: "CENTAC conducts unified admissions for professional higher education seats."
+      },
+      "Chandigarh": {
+        region: "UT",
+        entrance: "JAC Chandigarh / JEE Main Counseling",
+        psc: "UPSC / Chandigarh Administration Recruitment",
+        police: "Chandigarh Police Recruitment Board",
+        subordinate: "Chandigarh Administration Departmental Recruitments",
+        teacher: "Chandigarh Education Department (TGT/JBT) + CTET",
+        notes: "Engineering seats are offered at PEC and UIET via JAC Chandigarh."
+      },
+      "Andaman & Nicobar": {
+        region: "UT",
+        entrance: "JEE Main / CSAB NEUT Reservation Quotas",
+        psc: "UPSC / A&N Administration Direct Recruitment",
+        police: "Andaman & Nicobar Police Department",
+        subordinate: "A&N Administration Departmental Selection Boards",
+        teacher: "A&N Department of Education",
+        notes: "Engineering seats are reserved in mainland institutes via CSAB NEUT."
+      },
+      "Dadra & Nagar Haveli and Daman & Diu": {
+        region: "UT",
+        entrance: "GUJCET / JEE Main / Seat Counseling",
+        psc: "UPSC / UT Staff Selection Board",
+        police: "DNH & DD Police Recruitment Board",
+        subordinate: "UT Staff Selection Board",
+        teacher: "UT Department of Education",
+        notes: "Technical seats share quotas with neighboring state institutions."
+      },
+      "Lakshadweep": {
+        region: "UT",
+        entrance: "JEE Main / KEAM / CSAB NEUT Quotas",
+        psc: "UPSC / UT Administration Entry",
+        police: "Lakshadweep Police Department",
+        subordinate: "UT Administration Departmental Entry",
+        teacher: "Department of Education Lakshadweep",
+        notes: "Students utilize mainland quota seats allocated via CSAB."
+      }
+    };
+
+    /* ==========================================================================
+       2. GLOBAL STATE MANAGEMENT & TAB SWITCHING
+       ========================================================================== */
+
+    let currentTab = "explorer";
+    let chartInstanceSectors = null;
+    let chartInstanceQuals = null;
+
+    function switchTab(tabId) {
+      currentTab = tabId;
+
+      // Toggle View Sections
+      document.querySelectorAll("main > section").forEach(sec => sec.classList.add("hidden"));
+      const activeSection = document.getElementById(`view-${tabId}`);
+      if (activeSection) activeSection.classList.remove("hidden");
+
+      // Update Navigation Bar Buttons
+      document.querySelectorAll(".nav-btn").forEach(btn => {
+        btn.classList.remove("bg-amber-600", "text-white", "shadow");
+        btn.classList.add("text-slate-300", "hover:bg-slate-800", "hover:text-white");
+      });
+      const activeBtn = document.getElementById(`tab-${tabId}`);
+      if (activeBtn) {
+        activeBtn.classList.add("bg-amber-600", "text-white", "shadow");
+        activeBtn.classList.remove("text-slate-300", "hover:bg-slate-800");
+      }
+
+      // Tab Specific Initializations
+      if (tabId === "states") {
+        renderStateDetail();
+      } else if (tabId === "sectors") {
+        renderSectorAccordions();
+      } else if (tabId === "pathfinder") {
+        populatePathfinderDropdowns();
+      } else if (tabId === "analytics") {
+        initAnalyticsDashboard();
+      }
+    }
+
+    /* ==========================================================================
+       3. VIEW 1 LOGIC: ALL EXAMS DIRECTORY & EXPLORER
+       ========================================================================== */
+
+    function applyFilters() {
+      const searchVal = document.getElementById("input-search").value.toLowerCase().trim();
+      const sectorVal = document.getElementById("filter-sector").value;
+      const qualVal = document.getElementById("filter-eligibility").value;
+      const scopeVal = document.getElementById("filter-scope").value;
+
+      const filtered = ALL_EXAMS_DATA.filter(exam => {
+        // Keyword Search Match
+        const matchSearch = !searchVal || 
+          exam.name.toLowerCase().includes(searchVal) ||
+          exam.agency.toLowerCase().includes(searchVal) ||
+          exam.state.toLowerCase().includes(searchVal) ||
+          exam.details.toLowerCase().includes(searchVal) ||
+          exam.sector.toLowerCase().includes(searchVal);
+
+        // Sector Filter Match
+        const matchSector = (sectorVal === "ALL") || (exam.sector === sectorVal);
+
+        // Qualification Match
+        const matchQual = (qualVal === "ALL") || (exam.minEligibility === qualVal);
+
+        // Scope Match
+        const matchScope = (scopeVal === "ALL") || (exam.scope === scopeVal);
+
+        return matchSearch && matchSector && matchQual && matchScope;
+      });
+
+      renderExplorerGrid(filtered);
+    }
+
+    function renderExplorerGrid(examsList) {
+      const grid = document.getElementById("explorer-grid");
+      const countElem = document.getElementById("results-count");
+      countElem.textContent = examsList.length;
+
+      if (examsList.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full bg-white border border-slate-200 rounded-xl p-8 text-center text-slate-500">
+            <p class="text-base font-semibold">No matching examinations found.</p>
+            <p class="text-xs text-slate-400 mt-1">Try broadening your search query or resetting filters.</p>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = examsList.map(exam => `
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 flex flex-col justify-between hover:shadow-md transition-shadow">
+          <div class="space-y-2">
+            <div class="flex items-start justify-between gap-2">
+              <span class="text-xs font-bold px-2 py-0.5 rounded-full ${
+                exam.scope === 'National' 
+                  ? 'bg-amber-100 text-amber-800 border border-amber-200' 
+                  : 'bg-indigo-100 text-indigo-800 border border-indigo-200'
+              }">
+                ${exam.scope}
+              </span>
+              <span class="text-xs text-slate-400 font-medium">${exam.state}</span>
+            </div>
+
+            <h3 class="font-bold text-slate-900 text-base leading-snug">${exam.name}</h3>
+            
+            <p class="text-xs text-slate-500 font-medium">Conducted by: <span class="text-slate-700 font-semibold">${exam.agency}</span></p>
+
+            <div class="pt-1 flex flex-wrap gap-1 text-xs">
+              <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded border border-slate-200">
+                🏷️ ${exam.sector}
+              </span>
+              <span class="bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded border border-emerald-200">
+                🎓 ${exam.minEligibility}
+              </span>
+            </div>
+
+            <p class="text-xs text-slate-600 leading-relaxed pt-1">
+              ${exam.details}
+            </p>
+          </div>
+
+          <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+            <span class="text-slate-400">Official Standard Route</span>
+            <button onclick="quickCompareWith('${exam.id}')" class="text-amber-700 hover:text-amber-800 font-bold underline">
+              Compare Exam →
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function resetFilters() {
+      document.getElementById("input-search").value = "";
+      document.getElementById("filter-sector").value = "ALL";
+      document.getElementById("filter-eligibility").value = "ALL";
+      document.getElementById("filter-scope").value = "ALL";
+      applyFilters();
+    }
+
+    /* ==========================================================================
+       4. VIEW 2 LOGIC: STATE & UT ECOSYSTEM MAP
+       ========================================================================== */
+
+    function populateStateSelect(filterRegion = "ALL") {
+      const select = document.getElementById("select-state");
+      select.innerHTML = "";
+
+      const stateNames = Object.keys(STATES_ECOSYSTEM_DATA).sort();
+      
+      stateNames.forEach(st => {
+        const data = STATES_ECOSYSTEM_DATA[st];
+        if (filterRegion === "ALL" || (filterRegion === "UT" && data.region === "UT") || (data.region === filterRegion)) {
+          const opt = document.createElement("option");
+          opt.value = st;
+          opt.textContent = `${st} (${data.region})`;
+          select.appendChild(opt);
+        }
+      });
+
+      if (select.options.length > 0) {
+        select.selectedIndex = 0;
+        renderStateDetail();
+      }
+    }
+
+    function filterStateList(region) {
+      populateStateSelect(region);
+    }
+
+    function renderStateDetail() {
+      const select = document.getElementById("select-state");
+      const stateName = select.value;
+      if (!stateName || !STATES_ECOSYSTEM_DATA[stateName]) return;
+
+      const data = STATES_ECOSYSTEM_DATA[stateName];
+      const card = document.getElementById("state-detail-card");
+
+      // Find relevant entrance exam cards for this state
+      const stateExams = ALL_EXAMS_DATA.filter(e => e.state === stateName);
+
+      card.innerHTML = `
+        <div class="border-b border-slate-200 pb-4 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+          <div>
+            <div class="flex items-center space-x-2">
+              <h2 class="text-2xl font-black text-slate-900">${stateName}</h2>
+              <span class="text-xs bg-slate-100 text-slate-700 border border-slate-300 font-semibold px-2.5 py-0.5 rounded-full">
+                Region: ${data.region}
+              </span>
+            </div>
+            <p class="text-xs text-slate-500 mt-1">Complete Government Recruitment & College Entrance Pathway Mapping</p>
+          </div>
+          <div class="text-xs text-slate-500 bg-amber-50 border border-amber-200 p-2 rounded-lg max-w-md">
+            💡 <strong>Ecosystem Overview:</strong> ${data.notes}
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          
+          <!-- Column 1: Entrance & Public Service Commission -->
+          <div class="space-y-4">
+            
+            <div class="bg-amber-50/50 border border-amber-200 rounded-xl p-4 space-y-2">
+              <div class="flex items-center space-x-2 text-amber-900 font-bold text-sm">
+                <span>🎓 Main Engineering / College Entrance Route</span>
+              </div>
+              <p class="text-sm font-bold text-slate-800">${data.entrance}</p>
+              <p class="text-xs text-slate-600">Governs B.Tech & professional course admissions across government and affiliated private institutions in ${stateName}.</p>
+            </div>
+
+            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-2">
+              <div class="flex items-center space-x-2 text-slate-900 font-bold text-sm">
+                <span>🏛️ State Public Service Commission (PSC)</span>
+              </div>
+              <p class="text-sm font-bold text-indigo-900">${data.psc}</p>
+              <p class="text-xs text-slate-600">Responsible for Class-1 and Class-2 administrative, engineering, and gazetted officer recruitments.</p>
+            </div>
+
+            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-2">
+              <div class="flex items-center space-x-2 text-slate-900 font-bold text-sm">
+                <span>👮 Police & Security Forces Recruitment</span>
+              </div>
+              <p class="text-sm font-bold text-slate-800">${data.police}</p>
+              <p class="text-xs text-slate-600">Recruitment of Police Constables, Sub-Inspectors, Armed Reserve, and Fire/Jail Services.</p>
+            </div>
+
+          </div>
+
+          <!-- Column 2: Subordinate Boards & Teaching Recruitment -->
+          <div class="space-y-4">
+            
+            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-2">
+              <div class="flex items-center space-x-2 text-slate-900 font-bold text-sm">
+                <span>📑 Subordinate Services Selection Board</span>
+              </div>
+              <p class="text-sm font-bold text-slate-800">${data.subordinate}</p>
+              <p class="text-xs text-slate-600">Manages non-gazetted, clerical, revenue officer (Patwari/Lekhpal), and Group-C recruitments.</p>
+            </div>
+
+            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-2">
+              <div class="flex items-center space-x-2 text-slate-900 font-bold text-sm">
+                <span>👨‍🏫 Teacher Eligibility & School Recruitment</span>
+              </div>
+              <p class="text-sm font-bold text-slate-800">${data.teacher}</p>
+              <p class="text-xs text-slate-600">Teacher eligibility testing (TET) and direct recruitment for primary, secondary, and lecturer posts.</p>
+            </div>
+
+            <!-- Tracked Exams Pills -->
+            <div class="border-t border-slate-100 pt-3">
+              <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Indexed Exams for ${stateName}</h4>
+              <div class="flex flex-wrap gap-1.5">
+                ${
+                  stateExams.length > 0 
+                    ? stateExams.map(e => `<span class="bg-indigo-50 text-indigo-700 text-xs font-medium px-2.5 py-1 rounded border border-indigo-200">${e.name}</span>`).join('')
+                    : `<span class="text-xs text-slate-400 italic">Central exams (UPSC/SSC/IBPS/RRB) also apply directly for residents of ${stateName}.</span>`
+                }
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      `;
+    }
+
+    /* ==========================================================================
+       5. VIEW 3 LOGIC: SECTOR DEEP-DIVE ACCORDION
+       ========================================================================== */
+
+    const SECTOR_SUMMARIES = [
+      {
+        title: "🏛️ 1. UPSC (Union Public Service Commission)",
+        categoryKey: "Central Govt - UPSC",
+        description: "India's premier constitutional examination body conducting recruitments for Civil Services, Armed Forces Officers, Engineering Services, and Specialized Economic/Statistical Services.",
+        keyExams: ["UPSC CSE (IAS/IPS/IFS)", "Indian Forest Service (IFoS)", "Engineering Services (ESE/IES)", "Combined Defence Services (CDS)", "NDA & NA", "Combined Medical Services (CMS)", "CAPF Assistant Commandants", "Indian Economic Service (IES)", "Indian Statistical Service (ISS)", "Combined Geo-Scientist"]
+      },
+      {
+        title: "🏛️ 2. SSC (Staff Selection Commission)",
+        categoryKey: "Central Govt - SSC",
+        description: "Mass recruitment body for non-gazetted group B and C administrative, technical, and clerical roles across all Central Government Ministries and Departments.",
+        keyExams: ["SSC CGL (Graduate Level)", "SSC CHSL (10+2 Level)", "SSC MTS & Havaldar (10th Level)", "SSC CPO (Sub-Inspector)", "SSC JE (Junior Engineer)", "SSC GD Constable", "SSC Stenographer Grade C & D", "SSC JHT (Hindi Translator)"]
+      },
+      {
+        title: "🏦 3. Banking & Financial Regulatory Institutions",
+        categoryKey: "Banking & Regulatory",
+        description: "Public Sector Banks, Reserve Bank of India, and Apex Financial Regulators conducting systematic annual recruitment drives.",
+        keyExams: ["IBPS PO, Clerk & SO", "IBPS RRB Officer & Assistant", "SBI PO & Junior Associates", "RBI Grade B & RBI Assistant", "NABARD Grade A/B", "SEBI Grade A", "SIDBI Grade A", "LIC AAO & Assistant", "NIACL AO", "ECGC PO"]
+      },
+      {
+        title: "🚆 4. Indian Railways (RRB / RRC)",
+        categoryKey: "Railways (RRB/RRC)",
+        description: "World's largest railway network recruitment ecosystem covering non-technical popular categories, technical locomotive crews, engineering cadres, and security forces.",
+        keyExams: ["RRB NTPC (Station Master, Guards, Clerks)", "RRB Group D (Track Maintainer, Helpers)", "RRB ALP & Technician", "RRB JE (Junior Engineer)", "RPF Constable & Sub-Inspector", "RRC Apprentice Recruitments"]
+      },
+      {
+        title: "🪖 5. Defence & Armed Forces",
+        categoryKey: "Defence & Armed Forces",
+        description: "Commissioned officer entries and Agniveer schemes across the Indian Army, Indian Navy, and Indian Air Force.",
+        keyExams: ["UPSC NDA & NA", "UPSC CDS", "UPSC CAPF-AC", "Agniveer Army", "Agniveer Navy", "Agniveer Air Force", "AFCAT (Air Force)", "INET (Navy Officer Entry)"]
+      },
+      {
+        title: "🧑‍💻 6. Technical, Engineering & PSUs",
+        categoryKey: "Technical & PSUs",
+        description: "Public Sector Undertakings (PSUs) and research organizations offering direct executive engineer recruitments via GATE scores or independent national examinations.",
+        keyExams: ["UPSC ESE / IES", "SSC JE", "RRB JE", "GATE (ONGC, NTPC, BHEL, GAIL, IOCL, HPCL, BPCL, SAIL, PGCIL)", "ISRO ICRB Scientist", "DRDO RAC Scientist 'B'", "BARC OCES/DGFS", "NPCIL, BEL, HAL, ECIL Recruitments"]
+      },
+      {
+        title: "👨‍🏫 7. Teaching & Education Government Exams",
+        categoryKey: "Teaching & Education",
+        description: "National and state qualification testing for primary, secondary, and higher education academic posts.",
+        keyExams: ["CTET (Central Teacher Eligibility Test)", "UGC NET / JRF", "CSIR-UGC NET", "KVS & NVS Teacher Recruitments", "State TETs (UPTET, REET, KTET, OTET, Bihar STET, Assam TET, Maha TET)", "Assistant Professor University Recruitment"]
+      },
+      {
+        title: "⚖️ 8. Judiciary & Legal Services",
+        categoryKey: "Judiciary & Law",
+        description: "State judicial service recruitment for civil judges, prosecution officers, and legal advisers.",
+        keyExams: ["State Judicial Service Examinations", "Civil Judge (Junior Division)", "Judicial Magistrate", "APO (Assistant Prosecution Officer)", "Public Prosecutor", "Legal Officer in PSUs/Banks"]
+      },
+      {
+        title: "🧑‍⚕️ 9. Medical & Healthcare Government Recruitment",
+        categoryKey: "Medical & Healthcare",
+        description: "Recruitment of medical officers, nursing officers, pharmacists, and healthcare specialists across central and state hospital systems.",
+        keyExams: ["UPSC Combined Medical Services (CMS)", "AIIMS Nursing Officer (NORCET)", "ESIC Medical Officer & Healthcare Entry", "DSSSB Healthcare Recruitment", "State Health Department Recruitments"]
+      },
+      {
+        title: "📊 10. Statistics & Economic Services",
+        categoryKey: "Statistics & Economics",
+        description: "Specialized cadres for data analysts, statistical officers, and economists in government departments.",
+        keyExams: ["UPSC Indian Economic Service (IES)", "UPSC Indian Statistical Service (ISS)", "SSC CGL Junior Statistical Officer (JSO)", "RBI DEPR & DSIM Officer Roles", "State Statistical Officer Recruitments"]
+      }
+    ];
+
+    function renderSectorAccordions() {
+      const container = document.getElementById("sector-accordion-container");
+      container.innerHTML = SECTOR_SUMMARIES.map((sec, idx) => `
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+          <button onclick="toggleAccordion('acc-${idx}')" class="w-full px-5 py-4 text-left font-bold text-slate-900 flex items-center justify-between hover:bg-slate-50 transition-colors">
+            <span class="text-base">${sec.title}</span>
+            <span id="acc-icon-${idx}" class="text-amber-700 text-lg">▼</span>
+          </button>
+
+          <div id="acc-${idx}" class="hidden px-5 pb-5 pt-1 border-t border-slate-100 text-sm space-y-3">
+            <p class="text-slate-600 leading-relaxed">${sec.description}</p>
+
+            <div>
+              <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Major Examinations Included:</h4>
+              <div class="flex flex-wrap gap-1.5">
+                ${sec.keyExams.map(ex => `<span class="bg-slate-100 text-slate-800 text-xs font-medium px-2.5 py-1 rounded border border-slate-200">${ex}</span>`).join('')}
+              </div>
+            </div>
+
+            <div class="pt-2">
+              <button onclick="filterSectorFromAccordion('${sec.categoryKey}')" class="text-xs font-bold text-amber-700 hover:text-amber-800 underline">
+                Search & Filter all ${sec.categoryKey} exams in Directory →
+              </button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function toggleAccordion(accId) {
+      const content = document.getElementById(accId);
+      const idx = accId.split('-')[1];
+      const icon = document.getElementById(`acc-icon-${idx}`);
+
+      if (content.classList.contains("hidden")) {
+        content.classList.remove("hidden");
+        icon.textContent = "▲";
+      } else {
+        content.classList.add("hidden");
+        icon.textContent = "▼";
+      }
+    }
+
+    function filterSectorFromAccordion(sectorKey) {
+      switchTab('explorer');
+      document.getElementById("filter-sector").value = sectorKey;
+      applyFilters();
+    }
+
+    /* ==========================================================================
+       6. VIEW 4 LOGIC: QUALIFICATION PATHFINDER
+       ========================================================================== */
+
+    function populatePathfinderDropdowns() {
+      const stateSelect = document.getElementById("pf-state");
+      if (stateSelect.children.length > 0) return;
+
+      stateSelect.innerHTML = `<option value="ALL">All India / Any State</option>`;
+      Object.keys(STATES_ECOSYSTEM_DATA).sort().forEach(st => {
+        const opt = document.createElement("option");
+        opt.value = st;
+        opt.textContent = st;
+        stateSelect.appendChild(opt);
+      });
+    }
+
+    function runPathfinder() {
+      const qual = document.getElementById("pf-qual").value;
+      const sector = document.getElementById("pf-sector").value;
+      const state = document.getElementById("pf-state").value;
+
+      const matches = ALL_EXAMS_DATA.filter(exam => {
+        // Qualification match logic
+        let matchQual = false;
+        if (qual === "10th Pass") {
+          matchQual = (exam.minEligibility === "10th Pass");
+        } else if (qual === "12th Pass") {
+          matchQual = (exam.minEligibility === "10th Pass" || exam.minEligibility === "12th Pass");
+        } else if (qual === "Graduation") {
+          matchQual = (exam.minEligibility !== "Engineering Degree" && exam.minEligibility !== "Post Graduation" && exam.minEligibility !== "Medical Degree" && exam.minEligibility !== "Law Degree");
+        } else if (qual === "Engineering Degree") {
+          matchQual = (exam.minEligibility === "Engineering Degree" || exam.minEligibility === "Graduation" || exam.minEligibility === "12th Pass" || exam.minEligibility === "10th Pass");
+        } else {
+          matchQual = true; // PG/Specialized match all general degree & specialized entries
+        }
+
+        // State match
+        const matchState = (state === "ALL") || (exam.state === state) || (exam.scope === "National");
+
+        return matchQual && matchState;
+      });
+
+      const resultsDiv = document.getElementById("pathfinder-results");
+      const resultsGrid = document.getElementById("pf-results-grid");
+      const matchCount = document.getElementById("pf-match-count");
+
+      resultsDiv.classList.remove("hidden");
+      matchCount.textContent = matches.length;
+
+      if (matches.length === 0) {
+        resultsGrid.innerHTML = `
+          <div class="col-span-full bg-white border border-slate-200 rounded-xl p-6 text-center text-slate-500">
+            No exact exam match found for this combination. Consider selecting "All India" or broadening your qualification selection.
+          </div>
+        `;
+        return;
+      }
+
+      resultsGrid.innerHTML = matches.map(m => `
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs bg-sky-100 text-sky-800 font-semibold px-2 py-0.5 rounded">${m.sector}</span>
+            <span class="text-xs text-slate-400">${m.scope}</span>
+          </div>
+          <h4 class="font-bold text-slate-900 text-base">${m.name}</h4>
+          <p class="text-xs text-slate-500 font-medium">Agency: ${m.agency}</p>
+          <p class="text-xs text-slate-600 line-clamp-2">${m.details}</p>
+          <div class="pt-2 border-t border-slate-100 text-xs flex justify-between items-center">
+            <span class="text-emerald-700 font-semibold">Qual: ${m.minEligibility}</span>
+            <button onclick="quickCompareWith('${m.id}')" class="text-sky-700 font-bold underline">Compare →</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    /* ==========================================================================
+       7. VIEW 5 LOGIC: ANALYTICS & COMPARISON MATRIX
+       ========================================================================== */
+
+    function initAnalyticsDashboard() {
+      initCharts();
+      populateCompareDropdowns();
+      updateComparisonTable();
+    }
+
+    function initCharts() {
+      // 1. Sectoral Distribution Chart (Doughnut)
+      const sectorCounts = {};
+      ALL_EXAMS_DATA.forEach(e => {
+        sectorCounts[e.sector] = (sectorCounts[e.sector] || 0) + 1;
+      });
+
+      const sectorLabels = Object.keys(sectorCounts);
+      const sectorData = Object.values(sectorCounts);
+
+      const ctxSector = document.getElementById("chart-sectors").getContext("2d");
+      if (chartInstanceSectors) chartInstanceSectors.destroy();
+
+      chartInstanceSectors = new Chart(ctxSector, {
+        type: "doughnut",
+        data: {
+          labels: sectorLabels,
+          datasets: [{
+            data: sectorData,
+            backgroundColor: [
+              "#d97706", "#2563eb", "#059669", "#7c3aed", "#dc2626",
+              "#0284c7", "#4f46e5", "#0891b2", "#65a30d", "#d97706"
+            ]
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: "bottom",
+              labels: {
+                boxWidth: 12,
+                font: { size: 10 }
+              }
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return ` ${context.label}: ${context.raw} Exams Tracked`;
+                }
+              }
+            }
+          }
+        }
+      });
+
+      // 2. Minimum Qualification Breakdown (Bar)
+      const qualCounts = {};
+      ALL_EXAMS_DATA.forEach(e => {
+        qualCounts[e.minEligibility] = (qualCounts[e.minEligibility] || 0) + 1;
+      });
+
+      const qualLabels = Object.keys(qualCounts);
+      const qualData = Object.values(qualCounts);
+
+      const ctxQual = document.getElementById("chart-qualifications").getContext("2d");
+      if (chartInstanceQuals) chartInstanceQuals.destroy();
+
+      chartInstanceQuals = new Chart(ctxQual, {
+        type: "bar",
+        data: {
+          labels: qualLabels,
+          datasets: [{
+            label: "Number of Exams",
+            data: qualData,
+            backgroundColor: "#0284c7",
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: { stepSize: 2 }
+            },
+            x: {
+              ticks: { font: { size: 10 } }
+            }
+          }
+        }
+      });
+    }
+
+    function populateCompareDropdowns() {
+      const selectA = document.getElementById("compare-exam-a");
+      const selectB = document.getElementById("compare-exam-b");
+
+      if (selectA.children.length > 0) return;
+
+      selectA.innerHTML = "";
+      selectB.innerHTML = "";
+
+      ALL_EXAMS_DATA.forEach((exam, idx) => {
+        const optA = document.createElement("option");
+        optA.value = exam.id;
+        optA.textContent = `${exam.name} (${exam.agency})`;
+        selectA.appendChild(optA);
+
+        const optB = document.createElement("option");
+        optB.value = exam.id;
+        optB.textContent = `${exam.name} (${exam.agency})`;
+        selectB.appendChild(optB);
+      });
+
+      // Default selections
+      selectA.selectedIndex = 0; // AP EAPCET
+      selectB.selectedIndex = 10; // UPSC CSE
+    }
+
+    function updateComparisonTable() {
+      const idA = document.getElementById("compare-exam-a").value;
+      const idB = document.getElementById("compare-exam-b").value;
+
+      const examA = ALL_EXAMS_DATA.find(e => e.id === idA) || ALL_EXAMS_DATA[0];
+      const examB = ALL_EXAMS_DATA.find(e => e.id === idB) || ALL_EXAMS_DATA[1];
+
+      const wrapper = document.getElementById("comparison-table-wrapper");
+
+      wrapper.innerHTML = `
+        <table class="w-full text-left text-xs sm:text-sm border-collapse border border-slate-200">
+          <thead>
+            <tr class="bg-slate-100 text-slate-800">
+              <th class="p-3 border border-slate-200 w-1/4">Feature / Metric</th>
+              <th class="p-3 border border-slate-200 w-3/8 text-amber-900 font-bold bg-amber-50/50">${examA.name}</th>
+              <th class="p-3 border border-slate-200 w-3/8 text-indigo-900 font-bold bg-indigo-50/50">${examB.name}</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200">
+            <tr>
+              <td class="p-3 font-semibold text-slate-700 bg-slate-50 border border-slate-200">Conducting Body</td>
+              <td class="p-3 border border-slate-200 font-medium">${examA.agency}</td>
+              <td class="p-3 border border-slate-200 font-medium">${examB.agency}</td>
+            </tr>
+            <tr>
+              <td class="p-3 font-semibold text-slate-700 bg-slate-50 border border-slate-200">Exam Category</td>
+              <td class="p-3 border border-slate-200">${examA.sector}</td>
+              <td class="p-3 border border-slate-200">${examB.sector}</td>
+            </tr>
+            <tr>
+              <td class="p-3 font-semibold text-slate-700 bg-slate-50 border border-slate-200">Geographic Scope</td>
+              <td class="p-3 border border-slate-200"><span class="px-2 py-0.5 rounded text-xs ${examA.scope === 'National' ? 'bg-amber-100 text-amber-800' : 'bg-indigo-100 text-indigo-800'}">${examA.scope} (${examA.state})</span></td>
+              <td class="p-3 border border-slate-200"><span class="px-2 py-0.5 rounded text-xs ${examB.scope === 'National' ? 'bg-amber-100 text-amber-800' : 'bg-indigo-100 text-indigo-800'}">${examB.scope} (${examB.state})</span></td>
+            </tr>
+            <tr>
+              <td class="p-3 font-semibold text-slate-700 bg-slate-50 border border-slate-200">Minimum Qualification</td>
+              <td class="p-3 border border-slate-200 font-bold text-emerald-800">${examA.minEligibility}</td>
+              <td class="p-3 border border-slate-200 font-bold text-emerald-800">${examB.minEligibility}</td>
+            </tr>
+            <tr>
+              <td class="p-3 font-semibold text-slate-700 bg-slate-50 border border-slate-200">Key Focus / Purpose</td>
+              <td class="p-3 border border-slate-200 text-xs text-slate-600 leading-relaxed">${examA.details}</td>
+              <td class="p-3 border border-slate-200 text-xs text-slate-600 leading-relaxed">${examB.details}</td>
+            </tr>
+          </tbody>
+        </table>
+      `;
+    }
+
+    function quickCompareWith(examId) {
+      switchTab('analytics');
+      const selectA = document.getElementById("compare-exam-a");
+      if (selectA) {
+        selectA.value = examId;
+        updateComparisonTable();
+      }
+    }
+
+    /* ==========================================================================
+       8. INITIALIZATION ON DOM LOADED
+       ========================================================================== */
+
+    document.addEventListener("DOMContentLoaded", function() {
+      // Initialize Explorer View
+      applyFilters();
+
+      // Initialize State Dropdown Data
+      populateStateSelect("ALL");
+    });
+  </script>
+</body>
+</html>
